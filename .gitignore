@@ -1,0 +1,3 @@
+/target
+.idea
+/src/database/url_mongo_db.rs
