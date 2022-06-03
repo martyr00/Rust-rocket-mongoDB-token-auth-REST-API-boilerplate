@@ -14,8 +14,8 @@ pub async fn registration(
     match maybe_registration_request {
         None => { Err(Status::BadRequest) },
         Some(registration_request) => {
-            if get_valid_text(&registration_request.login, 200, 2) {
-                if get_valid_text(&registration_request.password, 200, 8) {
+            match valid_password_and_login(&registration_request.login, &registration_request.password) {
+                GetIsValidLoginAndPassword::Ok => {
                     match database.check_login_in_db(registration_request.login.clone()).await {
                         Ok(Some(_)) => { Err(Status::BadRequest) }, //login busy
                         Ok(None) => {
@@ -27,13 +27,13 @@ pub async fn registration(
                         },
                         Err(_) => { Err(Status::InternalServerError) }, //other
                     }
-                } else {
-                    //bad password
-                    Err(Status::BadRequest)
+                },
+                GetIsValidLoginAndPassword::BadLogin => {
+                    Err(Status::BadRequest) // bad login
+                },
+                GetIsValidLoginAndPassword::BadPassword => {
+                    Err(Status::BadRequest) //bad password
                 }
-            } else {
-                // bad login
-                Err(Status::BadRequest)
             }
         }
     }
