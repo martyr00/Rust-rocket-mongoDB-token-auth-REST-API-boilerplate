@@ -1,4 +1,4 @@
-use bcrypt::{hash, BcryptResult};
+use bcrypt::hash;
 use rocket::http::Status;
 
 pub fn get_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {

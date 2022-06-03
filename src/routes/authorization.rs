@@ -4,8 +4,7 @@ use rocket::State;
 
 use crate::database::connect_to_db::MongoDB;
 use crate::get_valid_text;
-use crate::helper::hash_text;
-use crate::r#const::{MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
+use crate::r#const::{ERROR_ALREADY_REGISTERED, ERROR_UNKNOWN, ERROR_WEAK_LOGIN, ERROR_WEAK_PASSWORD, ERROR_WRONG_REQUEST, MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 
 enum GetIsValidLoginAndPassword {
@@ -22,9 +21,9 @@ enum GetIsValidLoginAndPassword {
 pub async fn registration(
     database: &State<MongoDB>,
     maybe_registration_request: Option<Json<RegistrationRequest>>,
-) -> Result<Status, Status> {
+) -> Result<Status, (Status, &'static str)> {
     match maybe_registration_request {
-        None => Err(Status::BadRequest),
+        None => Err(ERROR_WRONG_REQUEST),
         Some(registration_request) => {
             match valid_password_and_login(
                 &registration_request.login,
@@ -32,25 +31,25 @@ pub async fn registration(
             ) {
                 GetIsValidLoginAndPassword::Ok => {
                     match database
-                        .check_login_in_db(registration_request.login.clone())
+                        .find_user_by_login(registration_request.login.clone())
                         .await
                     {
-                        Ok(Some(_)) => Err(Status::BadRequest), //todo login busy
+                        Ok(Some(_)) => Err(ERROR_ALREADY_REGISTERED),
                         Ok(None) => {
                             match database.registration(registration_request).await {
                                 Ok(true) => Ok(Status::Ok),           //todo response TOKEN
-                                Ok(false) => Err(Status::BadRequest), //todo bad password
-                                Err(_) => Err(Status::BadRequest),    // todo bad password
+                                Ok(false) => Err(ERROR_WEAK_PASSWORD),
+                                Err(_) => Err(ERROR_WEAK_PASSWORD),
                             }
                         }
-                        Err(_) => Err(Status::InternalServerError), //todo other
+                        Err(_) => Err(ERROR_UNKNOWN),
                     }
                 }
                 GetIsValidLoginAndPassword::BadLogin => {
-                    Err(Status::BadRequest) //todo bad login
+                    Err(ERROR_WEAK_LOGIN)
                 }
                 GetIsValidLoginAndPassword::BadPassword => {
-                    Err(Status::BadRequest) //todo bad password
+                    Err(ERROR_WEAK_PASSWORD)
                 }
             }
         }

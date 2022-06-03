@@ -1,9 +1,5 @@
-use bcrypt::hash;
-use chrono::{NaiveTime, Utc};
-use mongodb::{bson, bson::oid::ObjectId, options::ClientOptions, Client, Database};
-use rocket::serde::json::Json;
-use rocket::{fairing::AdHoc, futures::TryStreamExt};
-use std::collections::HashSet;
+use mongodb::{bson, options::ClientOptions, Client, Database};
+use rocket::{fairing::AdHoc};
 
 use crate::database::url_mongo_db::DB;
 
