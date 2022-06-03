@@ -1,4 +1,3 @@
-
 use bcrypt::hash;
 use chrono::{NaiveTime, Utc};
 use mongodb::{bson, bson::oid::ObjectId, options::ClientOptions, Client, Database};

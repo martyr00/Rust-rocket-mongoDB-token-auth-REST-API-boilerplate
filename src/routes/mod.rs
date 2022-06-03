@@ -1,2 +1,2 @@
-pub mod routes_models;
 pub mod authorization;
+pub mod routes_models;

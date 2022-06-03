@@ -7,8 +7,6 @@ pub struct User {
 
     pub login: String,
     pub password: String,
-
     //pub full_name:String,
     //pub age: i128,
-
 }
