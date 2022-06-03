@@ -9,6 +9,7 @@ pub mod helper;
 pub mod routes;
 pub mod database;
 pub mod model_user;
+pub mod r#const;
 
 #[launch]
 async fn rocket() -> _ {

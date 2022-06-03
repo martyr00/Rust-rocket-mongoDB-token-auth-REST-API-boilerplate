@@ -4,6 +4,7 @@ use rocket::State;
 use crate::database::connect_to_db::MongoDB;
 use crate::get_valid_text;
 use crate::helper::hash_text;
+use crate::r#const::{MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 
 #[post("/registration", format = "json", data = "<maybe_registration_request>")]
@@ -17,22 +18,22 @@ pub async fn registration(
             match valid_password_and_login(&registration_request.login, &registration_request.password) {
                 GetIsValidLoginAndPassword::Ok => {
                     match database.check_login_in_db(registration_request.login.clone()).await {
-                        Ok(Some(_)) => { Err(Status::BadRequest) }, //login busy
+                        Ok(Some(_)) => { Err(Status::BadRequest) }, //todo login busy
                         Ok(None) => {
                             match database.registration(registration_request).await {
                                 Ok(true) => { Ok(Status::Ok) }, //todo response TOKEN
-                                Ok(false) => { Err(Status::BadRequest) }, // bad password
-                                Err(_) => { Err(Status::BadRequest) } // bad password
+                                Ok(false) => { Err(Status::BadRequest) }, //todo bad password
+                                Err(_) => { Err(Status::BadRequest) } // todo bad password
                             }
                         },
-                        Err(_) => { Err(Status::InternalServerError) }, //other
+                        Err(_) => { Err(Status::InternalServerError) }, //todo other
                     }
                 },
                 GetIsValidLoginAndPassword::BadLogin => {
-                    Err(Status::BadRequest) // bad login
+                    Err(Status::BadRequest) //todo bad login
                 },
                 GetIsValidLoginAndPassword::BadPassword => {
-                    Err(Status::BadRequest) //bad password
+                    Err(Status::BadRequest) //todo bad password
                 }
             }
         }
@@ -46,8 +47,8 @@ enum GetIsValidLoginAndPassword {
 }
 
 fn valid_password_and_login(login: &str, password: &str) -> GetIsValidLoginAndPassword {
-    if get_valid_text(login, 200, 2) {
-        if get_valid_text(password, 200, 2) {
+    if get_valid_text(login, MAX_LEN_LOGIN, MIN_LEN_LOGIN) {
+        if get_valid_text(password, MAX_LEN_PASSWORD, MIN_LEN_PASSWORD) {
             GetIsValidLoginAndPassword::Ok
         } else { GetIsValidLoginAndPassword::BadPassword }
     } else { GetIsValidLoginAndPassword::BadLogin }
