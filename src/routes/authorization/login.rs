@@ -17,7 +17,7 @@ pub async fn login(
             match valid_password_and_login(&login_request.login, &login_request.password) {
                 GetIsValidLoginAndPassword::Ok => {
                     match database.login(login_request).await {
-                        Ok(true) => Ok(Status::Ok), //todo response TOKEN && TODO WTF?
+                        Ok(true) => Ok(Status::Ok), //todo response TOKEN
                         Ok(false) => Err(ERROR_WRONG_REQUEST),
                         Err(_) => Err(ERROR_WRONG_REQUEST),
                     }

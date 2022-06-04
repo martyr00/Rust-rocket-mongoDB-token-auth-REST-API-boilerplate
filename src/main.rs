@@ -4,8 +4,8 @@ extern crate rocket;
 use crate::database::connect_to_db::init;
 use crate::helper::get_valid_text;
 use crate::r#const::{ERROR_UNAUTHORIZED, ERROR_UNKNOWN};
-use crate::routes::login::login;
-use crate::routes::registration::registration;
+use crate::routes::authorization::login::login;
+use crate::routes::authorization::registration::registration;
 use rocket::http::Status;
 
 pub mod r#const;

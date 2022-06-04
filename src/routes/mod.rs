@@ -1,8 +1,7 @@
 use crate::get_valid_text;
 use crate::r#const::{MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
 
-pub mod login;
-pub mod registration;
+pub mod authorization;
 pub mod routes_models;
 
 pub enum GetIsValidLoginAndPassword {
