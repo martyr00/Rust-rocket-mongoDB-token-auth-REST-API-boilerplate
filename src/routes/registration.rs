@@ -3,15 +3,12 @@ use rocket::serde::json::Json;
 use rocket::State;
 
 use crate::database::connect_to_db::MongoDB;
-use crate::get_valid_text;
-use crate::r#const::{ERROR_ALREADY_REGISTERED, ERROR_UNKNOWN, ERROR_WEAK_LOGIN, ERROR_WEAK_PASSWORD, ERROR_WRONG_REQUEST, MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
+use crate::r#const::{
+    ERROR_ALREADY_REGISTERED, ERROR_UNKNOWN, ERROR_WEAK_LOGIN, ERROR_WEAK_PASSWORD,
+    ERROR_WRONG_REQUEST,
+};
 use crate::routes::routes_models::registration_request::RegistrationRequest;
-
-enum GetIsValidLoginAndPassword {
-    Ok,
-    BadLogin,
-    BadPassword,
-}
+use crate::routes::{valid_password_and_login, GetIsValidLoginAndPassword};
 
 #[post(
     "/registration",
@@ -37,7 +34,7 @@ pub async fn registration(
                         Ok(Some(_)) => Err(ERROR_ALREADY_REGISTERED),
                         Ok(None) => {
                             match database.registration(registration_request).await {
-                                Ok(true) => Ok(Status::Ok),           //todo response TOKEN
+                                Ok(true) => Ok(Status::Ok), //todo response TOKEN
                                 Ok(false) => Err(ERROR_WEAK_PASSWORD),
                                 Err(_) => Err(ERROR_WEAK_PASSWORD),
                             }
@@ -45,25 +42,9 @@ pub async fn registration(
                         Err(_) => Err(ERROR_UNKNOWN),
                     }
                 }
-                GetIsValidLoginAndPassword::BadLogin => {
-                    Err(ERROR_WEAK_LOGIN)
-                }
-                GetIsValidLoginAndPassword::BadPassword => {
-                    Err(ERROR_WEAK_PASSWORD)
-                }
+                GetIsValidLoginAndPassword::BadLogin => Err(ERROR_WEAK_LOGIN),
+                GetIsValidLoginAndPassword::BadPassword => Err(ERROR_WEAK_PASSWORD),
             }
         }
-    }
-}
-
-fn valid_password_and_login(login: &str, password: &str) -> GetIsValidLoginAndPassword {
-    if get_valid_text(login, MAX_LEN_LOGIN, MIN_LEN_LOGIN) {
-        if get_valid_text(password, MAX_LEN_PASSWORD, MIN_LEN_PASSWORD) {
-            GetIsValidLoginAndPassword::Ok
-        } else {
-            GetIsValidLoginAndPassword::BadPassword
-        }
-    } else {
-        GetIsValidLoginAndPassword::BadLogin
     }
 }

@@ -1,5 +1,5 @@
 use mongodb::{bson, options::ClientOptions, Client, Database};
-use rocket::{fairing::AdHoc};
+use rocket::fairing::AdHoc;
 
 use crate::database::url_mongo_db::DB;
 

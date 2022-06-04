@@ -1,27 +1,25 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::http::Status;
 use crate::database::connect_to_db::init;
 use crate::helper::get_valid_text;
 use crate::r#const::{ERROR_UNAUTHORIZED, ERROR_UNKNOWN};
-use crate::routes::authorization::registration;
+use crate::routes::login::login;
+use crate::routes::registration::registration;
+use rocket::http::Status;
 
 pub mod r#const;
 pub mod database;
 pub mod helper;
-pub mod routes;
 pub mod models;
+pub mod routes;
 
 #[launch]
 async fn rocket() -> _ {
     rocket::build()
         .attach(init().await)
-        .mount("/api/v1", routes![registration])
-        .register(
-            "/",
-            catchers![],
-        )
+        .mount("/api/v1", routes![registration, login])
+        .register("/", catchers![])
 }
 
 #[catch(401)]
