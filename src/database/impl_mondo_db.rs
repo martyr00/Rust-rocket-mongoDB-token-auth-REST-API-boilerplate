@@ -55,6 +55,8 @@ impl MongoDB {
                             _id: ObjectId::new(),
                             login: registration_request.login.clone(),
                             password: hash_password,
+                            first_name: registration_request.first_name.clone(),
+                            last_name: registration_request.last_name.clone(),
                         },
                         None,
                     )

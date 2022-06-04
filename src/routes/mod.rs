@@ -1,23 +1,29 @@
 use crate::get_valid_text;
-use crate::r#const::{MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD};
 
 pub mod authorization;
 pub mod routes_models;
 
-pub enum GetIsValidLoginAndPassword {
+pub enum GetIsValidTwoStr {
     Ok,
-    BadLogin,
-    BadPassword,
+    BadFirst,
+    BadSecond,
 }
 
-pub fn valid_password_and_login(login: &str, password: &str) -> GetIsValidLoginAndPassword {
-    if get_valid_text(login, MAX_LEN_LOGIN, MIN_LEN_LOGIN) {
-        if get_valid_text(password, MAX_LEN_PASSWORD, MIN_LEN_PASSWORD) {
-            GetIsValidLoginAndPassword::Ok
+pub fn valid_two_str(
+    first_str: &str,
+    second_str: &str,
+    max_first: usize,
+    min_first: usize,
+    max_second: usize,
+    min_second: usize,
+) -> GetIsValidTwoStr {
+    if get_valid_text(first_str, max_first, min_first) {
+        if get_valid_text(second_str, max_second, min_second) {
+            GetIsValidTwoStr::Ok
         } else {
-            GetIsValidLoginAndPassword::BadPassword
+            GetIsValidTwoStr::BadSecond
         }
     } else {
-        GetIsValidLoginAndPassword::BadLogin
+        GetIsValidTwoStr::BadFirst
     }
 }

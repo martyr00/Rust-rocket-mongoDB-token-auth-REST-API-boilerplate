@@ -4,5 +4,7 @@ use serde::Deserialize;
 pub struct RegistrationRequest {
     pub login: String,
     pub password: String,
-    //pub full_name: Option<String>, //todo fullname
+
+    pub first_name: Option<String>,
+    pub last_name: Option<String>,
 }
