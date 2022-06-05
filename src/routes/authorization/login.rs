@@ -1,11 +1,10 @@
-use crate::database::connect_to_db::MongoDB;
-use crate::r#const::{
-    ERROR_WRONG_REQUEST_STATUS, MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD,
-    WRONG_REQUEST_JSON,
+use crate::constants::{
+    MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD, WRONG_REQUEST,
 };
+use crate::database::connect_to_db::MongoDB;
+use crate::error_response::error_responses::ErrorResponse;
 use crate::routes::routes_models::login_request::LoginRequest;
 use crate::routes::{valid_two_str, GetIsValidTwoStr};
-use crate::ErrorResponse;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
@@ -16,7 +15,7 @@ pub async fn login(
     maybe_login_request: Option<Json<LoginRequest>>,
 ) -> Result<Status, (Status, Json<ErrorResponse>)> {
     match maybe_login_request {
-        None => Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON))),
+        None => Err(WRONG_REQUEST),
         Some(login_request) => {
             match valid_two_str(
                 &login_request.login,
@@ -29,16 +28,12 @@ pub async fn login(
                 GetIsValidTwoStr::Ok => {
                     match database.login(login_request).await {
                         Ok(true) => Ok(Status::Ok), //todo response TOKEN
-                        Ok(false) => Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON))),
-                        Err(_) => Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON))),
+                        Ok(false) => Err(WRONG_REQUEST),
+                        Err(_) => Err(WRONG_REQUEST),
                     }
                 }
-                GetIsValidTwoStr::BadFirst => {
-                    Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON)))
-                }
-                GetIsValidTwoStr::BadSecond => {
-                    Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON)))
-                }
+                GetIsValidTwoStr::BadFirst => Err(WRONG_REQUEST),
+                GetIsValidTwoStr::BadSecond => Err(WRONG_REQUEST),
             }
         }
     }

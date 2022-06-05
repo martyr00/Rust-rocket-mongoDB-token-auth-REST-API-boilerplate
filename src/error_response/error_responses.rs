@@ -1,21 +1,5 @@
-use rocket::http::Status;
+use crate::Status;
 use serde::Serialize;
-
-//min && max len login
-pub const MAX_LEN_LOGIN: usize = 200;
-pub const MIN_LEN_LOGIN: usize = 2;
-
-//min && max len password
-pub const MAX_LEN_PASSWORD: usize = 200;
-pub const MIN_LEN_PASSWORD: usize = 8;
-
-//min && max len first name
-pub const MAX_LEN_FIRST_NAME: usize = 200;
-pub const MIN_LEN_FIRST_NAME: usize = 2;
-
-//min && max len last name
-pub const MAX_LEN_LAST_NAME: usize = 200;
-pub const MIN_LEN_LAST_NAME: usize = 8;
 
 #[derive(Debug, Serialize)]
 pub struct ErrorResponse {

@@ -1,18 +1,18 @@
 #[macro_use]
 extern crate rocket;
 
+use crate::constants::{UNAUTHORIZED, UNKNOWN};
 use crate::database::connect_to_db::init;
+use crate::error_response::error_responses::ErrorResponse;
 use crate::helper::get_valid_text;
-use crate::r#const::{
-    ErrorResponse, ERROR_UNAUTHORIZED_STATUS, ERROR_UNKNOWN_STATUS, UNAUTHORIZED_JSON, UNKNOWN_JSON,
-};
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 
-pub mod r#const;
+pub mod constants;
 pub mod database;
+pub mod error_response;
 pub mod helper;
 pub mod models;
 pub mod routes;
@@ -27,12 +27,12 @@ async fn rocket() -> _ {
 
 #[catch(401)]
 pub fn unauthorized() -> (Status, Json<ErrorResponse>) {
-    (ERROR_UNAUTHORIZED_STATUS, Json(UNAUTHORIZED_JSON))
+    UNAUTHORIZED
 }
 
 #[catch(401)]
 pub fn internal_sever_error() -> (Status, Json<ErrorResponse>) {
-    (ERROR_UNKNOWN_STATUS, Json(UNKNOWN_JSON))
+    UNKNOWN
 }
 
 // Bearer

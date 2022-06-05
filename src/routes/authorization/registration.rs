@@ -2,15 +2,14 @@ use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
 
-use crate::database::connect_to_db::MongoDB;
-use crate::r#const::{
-    ALREADY_REGISTERED_JSON, ERROR_ALREADY_REGISTERED_STATUS, ERROR_WEAK_LOGIN_STATUS,
-    ERROR_WEAK_PASSWORD_STATUS, ERROR_WRONG_REQUEST_STATUS, MAX_LEN_LOGIN, MAX_LEN_PASSWORD,
-    MIN_LEN_LOGIN, MIN_LEN_PASSWORD, WEAK_LOGIN_JSON, WEAK_PASSWORD_JSON, WRONG_REQUEST_JSON,
+use crate::constants::{
+    ALREADY_REGISTERED, MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD, UNKNOWN,
+    WEAK_LOGIN, WEAK_PASSWORD, WRONG_REQUEST,
 };
+use crate::database::connect_to_db::MongoDB;
+use crate::error_response::error_responses::ErrorResponse;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::{valid_two_str, GetIsValidTwoStr};
-use crate::{ErrorResponse, ERROR_UNKNOWN_STATUS, UNKNOWN_JSON};
 
 #[post(
     "/registration",
@@ -22,7 +21,7 @@ pub async fn registration(
     maybe_registration_request: Option<Json<RegistrationRequest>>,
 ) -> Result<Status, (Status, Json<ErrorResponse>)> {
     match maybe_registration_request {
-        None => Err((ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON))),
+        None => Err(WRONG_REQUEST),
         Some(registration_request) => {
             match valid_two_str(
                 &registration_request.login,
@@ -37,28 +36,19 @@ pub async fn registration(
                         .find_user_by_login(registration_request.login.clone())
                         .await
                     {
-                        Ok(Some(_)) => Err((
-                            ERROR_ALREADY_REGISTERED_STATUS,
-                            Json(ALREADY_REGISTERED_JSON),
-                        )),
+                        Ok(Some(_)) => Err(ALREADY_REGISTERED),
                         Ok(None) => {
                             match database.registration(registration_request).await {
                                 Ok(true) => Ok(Status::Ok), //todo response TOKEN
-                                Ok(false) => {
-                                    Err((ERROR_WEAK_PASSWORD_STATUS, Json(WEAK_PASSWORD_JSON)))
-                                }
-                                Err(_) => {
-                                    Err((ERROR_WEAK_PASSWORD_STATUS, Json(WEAK_PASSWORD_JSON)))
-                                }
+                                Ok(false) => Err(WEAK_PASSWORD),
+                                Err(_) => Err(WEAK_PASSWORD),
                             }
                         }
-                        Err(_) => Err((ERROR_UNKNOWN_STATUS, Json(UNKNOWN_JSON))),
+                        Err(_) => Err(UNKNOWN),
                     }
                 }
-                GetIsValidTwoStr::BadFirst => Err((ERROR_WEAK_LOGIN_STATUS, Json(WEAK_LOGIN_JSON))),
-                GetIsValidTwoStr::BadSecond => {
-                    Err((ERROR_WEAK_PASSWORD_STATUS, Json(WEAK_PASSWORD_JSON)))
-                }
+                GetIsValidTwoStr::BadFirst => Err(WEAK_LOGIN),
+                GetIsValidTwoStr::BadSecond => Err(WEAK_PASSWORD),
             }
         }
     }
