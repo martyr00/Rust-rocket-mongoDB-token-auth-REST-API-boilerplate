@@ -43,3 +43,13 @@ pub const ERROR_ALREADY_REGISTERED_STATUS: Status = Status::BadRequest;
 pub const ALREADY_REGISTERED_JSON: ErrorResponse = ErrorResponse {
     cause: "Already registered",
 };
+
+pub const ERROR_WRONG_FIRST_NAME_STATUS: Status = Status::BadRequest;
+pub const WRONG_FIRST_NAME_JSON: ErrorResponse = ErrorResponse {
+    cause: "Wrong first name",
+};
+
+pub const ERROR_WRONG_LAST_NAME_STATUS: Status = Status::BadRequest;
+pub const WRONG_LAST_NAME_JSON: ErrorResponse = ErrorResponse {
+    cause: "Wrong last name",
+};

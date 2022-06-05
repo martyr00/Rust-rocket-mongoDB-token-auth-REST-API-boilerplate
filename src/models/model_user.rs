@@ -8,6 +8,6 @@ pub struct User {
     pub login: String,
     pub password: String,
 
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
+    pub first_name: String,
+    pub last_name: String,
 }
