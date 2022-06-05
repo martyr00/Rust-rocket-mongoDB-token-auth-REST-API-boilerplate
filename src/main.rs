@@ -15,8 +15,8 @@ pub mod database;
 pub mod error_response;
 pub mod helper;
 pub mod models;
-pub mod routes;
 pub mod private;
+pub mod routes;
 
 #[launch]
 async fn rocket() -> _ {

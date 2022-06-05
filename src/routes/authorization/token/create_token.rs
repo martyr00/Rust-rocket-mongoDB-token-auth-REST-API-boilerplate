@@ -5,7 +5,7 @@ pub fn create_temp_jwt() {
 }
 
 pub fn create_jwt() {
-    let expiration = create_expiration(3600*7);
+    let expiration = create_expiration(3600 * 7);
 }
 
 fn create_expiration(seconds: i64) -> i64 {
