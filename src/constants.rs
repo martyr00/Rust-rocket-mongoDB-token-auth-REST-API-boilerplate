@@ -8,21 +8,22 @@ use crate::error_response::error_responses::{
 use rocket::http::Status;
 use rocket::serde::json::Json;
 
+pub struct LenText {
+    pub(crate) min: usize,
+    pub(crate) max: usize,
+}
+
 //min && max len login
-pub const MAX_LEN_LOGIN: usize = 200;
-pub const MIN_LEN_LOGIN: usize = 2;
+pub const LEN_LOGIN: LenText = LenText { min: 2, max: 200 };
 
 //min && max len password
-pub const MAX_LEN_PASSWORD: usize = 200;
-pub const MIN_LEN_PASSWORD: usize = 8;
+pub const LEN_PASSWORD: LenText = LenText { min: 8, max: 200 };
 
 //min && max len first name
-pub const MAX_LEN_FIRST_NAME: usize = 100;
-pub const MIN_LEN_FIRST_NAME: usize = 2;
+pub const LEN_FIRST_NAME: LenText = LenText { min: 2, max: 100 };
 
 //min && max len last name
-pub const MAX_LEN_LAST_NAME: usize = 150;
-pub const MIN_LEN_LAST_NAME: usize = 2;
+pub const LEN_LAST_NAME: LenText = LenText { min: 2, max: 150 };
 
 pub const WRONG_REQUEST: (Status, Json<ErrorResponse>) =
     (ERROR_WRONG_REQUEST_STATUS, Json(WRONG_REQUEST_JSON));

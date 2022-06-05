@@ -1,10 +1,9 @@
-use crate::constants::{
-    MAX_LEN_LOGIN, MAX_LEN_PASSWORD, MIN_LEN_LOGIN, MIN_LEN_PASSWORD, WRONG_REQUEST,
-};
+use crate::constants::{LEN_LOGIN, LEN_PASSWORD, WRONG_REQUEST};
 use crate::database::connect_to_db::MongoDB;
 use crate::error_response::error_responses::ErrorResponse;
 use crate::routes::routes_models::login_request::LoginRequest;
-use crate::routes::{valid_two_str, GetIsValidTwoStr};
+use crate::routes::validator_authorization::get_valid_login_and_password;
+use crate::routes::TypeValidTwoStr;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 use rocket::State;
@@ -17,23 +16,21 @@ pub async fn login(
     match maybe_login_request {
         None => Err(WRONG_REQUEST),
         Some(login_request) => {
-            match valid_two_str(
+            match get_valid_login_and_password(
                 &login_request.login,
                 &login_request.password,
-                MAX_LEN_LOGIN,
-                MIN_LEN_LOGIN,
-                MAX_LEN_PASSWORD,
-                MIN_LEN_PASSWORD,
+                LEN_LOGIN,
+                LEN_PASSWORD,
             ) {
-                GetIsValidTwoStr::Ok => {
+                TypeValidTwoStr::Ok => {
                     match database.login(login_request).await {
                         Ok(true) => Ok(Status::Ok), //todo response TOKEN
                         Ok(false) => Err(WRONG_REQUEST),
                         Err(_) => Err(WRONG_REQUEST),
                     }
                 }
-                GetIsValidTwoStr::BadFirst => Err(WRONG_REQUEST),
-                GetIsValidTwoStr::BadSecond => Err(WRONG_REQUEST),
+                TypeValidTwoStr::BadFirst => Err(WRONG_REQUEST),
+                TypeValidTwoStr::BadSecond => Err(WRONG_REQUEST),
             }
         }
     }
