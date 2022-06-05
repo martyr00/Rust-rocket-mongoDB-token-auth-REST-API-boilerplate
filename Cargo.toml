@@ -15,3 +15,4 @@ uuid = { version = "1.0.0", eatures = ["serde", "v4"] }
 bcrypt = "0.13.0"
 chrono = "0.4.19"
 rocket-validation = "0.1.0"
+jsonwebtoken = "8.1.0"
