@@ -8,9 +8,7 @@ use crate::database::{LoginError, RegistrationError};
 use crate::helper::hash_text;
 use crate::models::model_user::User;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
-use crate::routes::authorization::token::create_token::{
-    create_token_and_refresh,
-};
+use crate::routes::authorization::token::create_token::create_token_and_refresh;
 use crate::routes::routes_models::login_request::LoginRequest;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 
@@ -35,7 +33,16 @@ impl MongoDB {
             Ok(option_user) => match option_user {
                 None => Ok(LoginError::WrongLogin),
                 Some(user) => match verify(&login_request.password, &user.password) {
-                    Ok(true) => Ok(LoginError::Ok),
+                    Ok(true) => {
+                        match create_token_and_refresh(
+                            user._id.clone(),
+                            JWT_SECRET,
+                            REFRESH_JWT_SECRET,
+                        ) {
+                            Ok(tokens) => Ok(LoginError::Ok(tokens)),
+                            Err(_) => Ok(LoginError::Unknown),
+                        }
+                    }
                     Ok(false) => Ok(LoginError::WrongPassword),
                     Err(_) => Ok(LoginError::WrongPassword),
                 },

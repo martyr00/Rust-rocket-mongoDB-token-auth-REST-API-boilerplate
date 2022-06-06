@@ -6,6 +6,7 @@ use crate::constants::{LEN_LOGIN, LEN_PASSWORD, WRONG_REQUEST};
 use crate::database::connect_to_db::MongoDB;
 use crate::database::LoginError;
 use crate::error_response::error_responses::ErrorResponse;
+use crate::models::tokens::Token;
 use crate::routes::routes_models::login_request::LoginRequest;
 use crate::routes::validator_authorization::get_valid_login_and_password;
 use crate::routes::TypeValidTwoStr;
@@ -14,7 +15,7 @@ use crate::routes::TypeValidTwoStr;
 pub async fn login(
     database: &State<MongoDB>,
     maybe_login_request: Option<Json<LoginRequest>>,
-) -> Result<Status, (Status, Json<ErrorResponse>)> {
+) -> Result<Json<Token>, (Status, Json<ErrorResponse>)> {
     match maybe_login_request {
         None => Err(WRONG_REQUEST),
         Some(login_request) => {
@@ -25,7 +26,7 @@ pub async fn login(
                 LEN_PASSWORD,
             ) {
                 TypeValidTwoStr::Ok => match login_match(database, login_request).await {
-                    Ok(_) => Ok(Status::Ok),
+                    Ok(tokens) => Ok(Json(tokens)),
                     Err(_) => Err(WRONG_REQUEST),
                 },
                 TypeValidTwoStr::BadFirst => Err(WRONG_REQUEST),
@@ -38,11 +39,12 @@ pub async fn login(
 async fn login_match(
     database: &State<MongoDB>,
     login_request: Json<LoginRequest>,
-) -> Result<(), ()> {
+) -> Result<Token, ()> {
     match database.login(login_request).await {
-        Ok(LoginError::Ok) => Ok(()),
+        Ok(LoginError::Ok(tokens)) => Ok(tokens),
         Ok(LoginError::WrongPassword) => Err(()),
         Ok(LoginError::WrongLogin) => Err(()),
+        Ok(LoginError::Unknown) => Err(()),
         Err(_) => Err(()),
     }
 }
