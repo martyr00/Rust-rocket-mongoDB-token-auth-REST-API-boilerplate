@@ -1,4 +1,5 @@
 use bcrypt::hash;
+use mongodb::bson::oid::ObjectId;
 use rocket::http::Status;
 
 pub fn get_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {
@@ -23,3 +24,10 @@ pub fn hash_text(text: String, cost: u32) -> Result<String, Status> {
         Err(_) => Err(Status::BadRequest),
     };
 }
+
+// fn object_id_parse_str(id_str: String) -> Result<ObjectId, String> {
+//     match ObjectId::parse_str(id_str) {
+//         Ok(to_id) => Ok(to_id),
+//         Err(error) => Err(format!("{}", error)),
+//     }
+// }
