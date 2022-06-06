@@ -24,17 +24,25 @@ pub async fn login(
                 LEN_LOGIN,
                 LEN_PASSWORD,
             ) {
-                TypeValidTwoStr::Ok => {
-                    match database.login(login_request).await {
-                        Ok(LoginError::Ok) => Ok(Status::Ok), //todo response TOKEN
-                        Ok(LoginError::WrongPassword) => Err(WRONG_REQUEST),
-                        Ok(LoginError::WrongLogin) => Err(WRONG_REQUEST),
-                        Err(_) => Err(WRONG_REQUEST),
-                    }
-                }
+                TypeValidTwoStr::Ok => match login_match(database, login_request).await {
+                    Ok(_) => Ok(Status::Ok),
+                    Err(_) => Err(WRONG_REQUEST),
+                },
                 TypeValidTwoStr::BadFirst => Err(WRONG_REQUEST),
                 TypeValidTwoStr::BadSecond => Err(WRONG_REQUEST),
             }
         }
+    }
+}
+
+async fn login_match(
+    database: &State<MongoDB>,
+    login_request: Json<LoginRequest>,
+) -> Result<(), ()> {
+    match database.login(login_request).await {
+        Ok(LoginError::Ok) => Ok(()),
+        Ok(LoginError::WrongPassword) => Err(()),
+        Ok(LoginError::WrongLogin) => Err(()),
+        Err(_) => Err(()),
     }
 }
