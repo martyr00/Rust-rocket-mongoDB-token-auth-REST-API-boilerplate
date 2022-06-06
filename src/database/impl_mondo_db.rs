@@ -7,6 +7,10 @@ use crate::database::connect_to_db::MongoDB;
 use crate::database::{LoginError, RegistrationError};
 use crate::helper::hash_text;
 use crate::models::model_user::User;
+use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
+use crate::routes::authorization::token::create_token::{
+    create_token_and_refresh,
+};
 use crate::routes::routes_models::login_request::LoginRequest;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 
@@ -49,19 +53,19 @@ impl MongoDB {
             Ok(Some(_)) => Ok(RegistrationError::AlreadyRegistered),
             Ok(None) => match hash_text(registration_request.password.clone(), 4) {
                 Ok(hash_password) => {
-                    collection_user
-                        .insert_one(
-                            User {
-                                _id: ObjectId::new(),
-                                login: registration_request.login.clone(),
-                                password: hash_password,
-                                first_name: registration_request.first_name.clone(),
-                                last_name: registration_request.last_name.clone(),
-                            },
-                            None,
-                        )
-                        .await?;
-                    Ok(RegistrationError::Ok)
+                    let user = User {
+                        _id: ObjectId::new(),
+                        login: registration_request.login.clone(),
+                        password: hash_password,
+                        first_name: registration_request.first_name.clone(),
+                        last_name: registration_request.last_name.clone(),
+                    };
+                    collection_user.insert_one(&user, None).await?;
+                    match create_token_and_refresh(user._id.clone(), JWT_SECRET, REFRESH_JWT_SECRET)
+                    {
+                        Ok(tokens) => Ok(RegistrationError::Ok(tokens)),
+                        Err(_) => Ok(RegistrationError::Unknown),
+                    }
                 }
                 Err(_) => Ok(RegistrationError::WrongPassword),
             },

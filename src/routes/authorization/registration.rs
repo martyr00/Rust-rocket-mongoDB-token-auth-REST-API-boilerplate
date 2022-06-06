@@ -9,6 +9,7 @@ use crate::constants::{
 use crate::database::connect_to_db::MongoDB;
 use crate::database::RegistrationError;
 use crate::error_response::error_responses::ErrorResponse;
+use crate::models::tokens::Token;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::validator_authorization::valid_registration_data_user;
 use crate::routes::TypeValidDataFromRegistration;
@@ -21,7 +22,7 @@ use crate::routes::TypeValidDataFromRegistration;
 pub async fn registration(
     database: &State<MongoDB>,
     maybe_registration_request: Option<Json<RegistrationRequest>>,
-) -> Result<Status, (Status, Json<ErrorResponse>)> {
+) -> Result<Json<Token>, (Status, Json<ErrorResponse>)> {
     match maybe_registration_request {
         None => Err(WRONG_REQUEST),
         Some(registration_request) => {
@@ -34,7 +35,7 @@ pub async fn registration(
             ) {
                 TypeValidDataFromRegistration::Ok => {
                     match database.registration(registration_request).await {
-                        Ok(RegistrationError::Ok) => Ok(Status::Ok), //todo response TOKEN
+                        Ok(RegistrationError::Ok(token)) => Ok(Json(token)),
                         Ok(RegistrationError::AlreadyRegistered) => Err(ALREADY_REGISTERED),
                         Ok(RegistrationError::WrongPassword) => Err(WEAK_PASSWORD),
                         Ok(RegistrationError::Unknown) => Err(UNKNOWN),
