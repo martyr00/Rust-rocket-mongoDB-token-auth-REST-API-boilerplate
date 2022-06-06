@@ -1,12 +1,14 @@
-use crate::database::connect_to_db::MongoDB;
-use crate::helper::hash_text;
-use crate::models::model_user::User;
-use crate::routes::routes_models::login_request::LoginRequest;
-use crate::routes::routes_models::registration_request::RegistrationRequest;
 use bcrypt::verify;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{bson, Database};
 use rocket::serde::json::Json;
+
+use crate::database::connect_to_db::MongoDB;
+use crate::database::{LoginError, RegistrationError};
+use crate::helper::hash_text;
+use crate::models::model_user::User;
+use crate::routes::routes_models::login_request::LoginRequest;
+use crate::routes::routes_models::registration_request::RegistrationRequest;
 
 impl MongoDB {
     pub fn new(database: Database) -> Self {
@@ -21,49 +23,49 @@ impl MongoDB {
             .await?)
     }
 
-    pub async fn login(&self, login_request: Json<LoginRequest>) -> mongodb::error::Result<bool> {
+    pub async fn login(
+        &self,
+        login_request: Json<LoginRequest>,
+    ) -> mongodb::error::Result<LoginError> {
         match Self::find_user_by_login(self, login_request.login.clone()).await {
             Ok(option_user) => match option_user {
-                None => {
-                    println!("Wrong login");
-                    Ok(false)
-                }
+                None => Ok(LoginError::WrongLogin),
                 Some(user) => match verify(&login_request.password, &user.password) {
-                    Ok(true) => Ok(true),
-                    Ok(false) => Ok(false),
-                    Err(_) => Ok(false),
+                    Ok(true) => Ok(LoginError::Ok),
+                    Ok(false) => Ok(LoginError::WrongPassword),
+                    Err(_) => Ok(LoginError::WrongPassword),
                 },
             },
-            Err(error) => {
-                println!("error find_user_by_login: {:?}", error);
-                Ok(false)
-            }
+            Err(_) => Ok(LoginError::WrongLogin),
         }
     }
 
     pub async fn registration(
         &self,
         registration_request: Json<RegistrationRequest>,
-    ) -> mongodb::error::Result<bool> {
+    ) -> mongodb::error::Result<RegistrationError> {
         let collection_user = self.database.collection::<User>("user");
-
-        match hash_text(registration_request.password.clone(), 4) {
-            Ok(hash_password) => {
-                collection_user
-                    .insert_one(
-                        User {
-                            _id: ObjectId::new(),
-                            login: registration_request.login.clone(),
-                            password: hash_password,
-                            first_name: registration_request.first_name.clone(),
-                            last_name: registration_request.last_name.clone(),
-                        },
-                        None,
-                    )
-                    .await?;
-                Ok(true)
-            }
-            Err(_) => Ok(false),
+        match Self::find_user_by_login(self, registration_request.login.clone()).await {
+            Ok(Some(_)) => Ok(RegistrationError::AlreadyRegistered),
+            Ok(None) => match hash_text(registration_request.password.clone(), 4) {
+                Ok(hash_password) => {
+                    collection_user
+                        .insert_one(
+                            User {
+                                _id: ObjectId::new(),
+                                login: registration_request.login.clone(),
+                                password: hash_password,
+                                first_name: registration_request.first_name.clone(),
+                                last_name: registration_request.last_name.clone(),
+                            },
+                            None,
+                        )
+                        .await?;
+                    Ok(RegistrationError::Ok)
+                }
+                Err(_) => Ok(RegistrationError::WrongPassword),
+            },
+            Err(_) => Ok(RegistrationError::Unknown),
         }
     }
 }

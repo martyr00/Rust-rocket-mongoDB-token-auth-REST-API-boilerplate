@@ -11,12 +11,12 @@ use rocket::http::Status;
 use rocket::serde::json::Json;
 
 pub mod constants;
-pub mod database;
+mod database;
 pub mod error_response;
-pub mod helper;
-pub mod models;
-pub mod private;
-pub mod routes;
+mod helper;
+mod models;
+mod private;
+mod routes;
 
 #[launch]
 async fn rocket() -> _ {

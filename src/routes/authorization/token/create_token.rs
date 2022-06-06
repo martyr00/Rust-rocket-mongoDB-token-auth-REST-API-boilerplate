@@ -1,35 +1,33 @@
-// TODO JWD TOKEN!!!
-use chrono::Utc;
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-struct Claims {
-    sub: String,
-    exp: usize,
-}
-
-pub fn create_temp_jwt(uid: String) {
-    let expiration = create_expiration(3600);
-
-    let _claims = claims(uid, expiration);
-}
-
-pub fn create_jwt(uid: String) {
-    let expiration = create_expiration(3600 * 7);
-
-    let _claims = claims(uid, expiration);
-}
-
-fn claims(uid: String, exp: i64) -> Claims {
-    Claims {
-        sub: uid.to_owned(),
-        exp: exp as usize,
-    }
-}
-
-fn create_expiration(seconds: i64) -> i64 {
-    Utc::now()
-        .checked_add_signed(chrono::Duration::seconds(seconds))
-        .expect("valid timestamp")
-        .timestamp()
-}
+// use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
+// use mongodb::bson::oid::ObjectId;
+// use rocket::futures::future::err;
+// use serde::{Deserialize, Serialize};
+//
+// pub enum CreateTokenOutcome {
+//     Ok(String),
+//     Err,
+// }
+//
+// #[derive(Debug, Serialize, Deserialize)]
+// struct Claims {
+//     user_id: String,
+// }
+//
+// pub fn create_jwt(user_object_id: ObjectId) -> CreateTokenOutcome {
+//     match user_object_id {
+//         Ok(user_id_string) => {
+//             let my_claims = Claims {
+//                 user_id: user_id_string,
+//             };
+//             CreateTokenOutcome::Ok(
+//                 encode(
+//                     &Header::default(),
+//                     &my_claims,
+//                     &EncodingKey::from_secret("secret".as_ref()),
+//                 )
+//                 .unwrap(),
+//             )
+//         }
+//         Err(_) => Err,
+//     }
+// }

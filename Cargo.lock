@@ -1908,10 +1908,12 @@ dependencies = [
 name = "rust_rest_api_boilerplate"
 version = "0.1.0"
 dependencies = [
+ "base64",
  "bcrypt",
  "chrono",
  "jsonwebtoken",
  "mongodb",
+ "rand_core",
  "rocket",
  "rocket-validation",
  "rocket_db_pools",

@@ -1,12 +1,14 @@
+use rocket::http::Status;
+use rocket::serde::json::Json;
+use rocket::State;
+
 use crate::constants::{LEN_LOGIN, LEN_PASSWORD, WRONG_REQUEST};
 use crate::database::connect_to_db::MongoDB;
+use crate::database::LoginError;
 use crate::error_response::error_responses::ErrorResponse;
 use crate::routes::routes_models::login_request::LoginRequest;
 use crate::routes::validator_authorization::get_valid_login_and_password;
 use crate::routes::TypeValidTwoStr;
-use rocket::http::Status;
-use rocket::serde::json::Json;
-use rocket::State;
 
 #[post("/login", format = "json", data = "<maybe_login_request>")]
 pub async fn login(
@@ -24,8 +26,9 @@ pub async fn login(
             ) {
                 TypeValidTwoStr::Ok => {
                     match database.login(login_request).await {
-                        Ok(true) => Ok(Status::Ok), //todo response TOKEN
-                        Ok(false) => Err(WRONG_REQUEST),
+                        Ok(LoginError::Ok) => Ok(Status::Ok), //todo response TOKEN
+                        Ok(LoginError::WrongPassword) => Err(WRONG_REQUEST),
+                        Ok(LoginError::WrongLogin) => Err(WRONG_REQUEST),
                         Err(_) => Err(WRONG_REQUEST),
                     }
                 }
