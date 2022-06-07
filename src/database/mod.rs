@@ -18,7 +18,7 @@ pub enum RegistrationError {
     Unknown,
 }
 
-pub enum FindUser {
+pub enum FindUserBy {
     UserNotFound,
     UserFoundByLogin,
     UserFoundByEmail,

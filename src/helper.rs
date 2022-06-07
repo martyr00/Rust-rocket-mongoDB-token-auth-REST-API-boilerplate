@@ -1,5 +1,5 @@
 use crate::database::connect_to_db::MongoDB;
-use crate::database::FindUser;
+use crate::database::FindUserBy;
 use bcrypt::hash;
 use rocket::http::Status;
 
@@ -26,20 +26,18 @@ pub fn hash_text(text: String, cost: u32) -> Result<String, Status> {
     };
 }
 
-pub async fn find_user_by_login_and_mail(database: &MongoDB, mail: &str, login: &str) -> FindUser {
-    match database
-        .find_user_by("login".to_string(), login.to_string())
-        .await
-    {
-        Ok(None) => match database
-            .find_user_by("mail".to_string(), mail.to_string())
-            .await
-        {
-            Ok(None) => FindUser::UserNotFound,
-            Ok(Some(_)) => FindUser::UserFoundByEmail,
-            Err(_) => FindUser::UserFoundByEmail,
+pub async fn find_user_by_login_and_mail(
+    database: &MongoDB,
+    mail: &str,
+    login: &str,
+) -> FindUserBy {
+    match database.find_user_by("login", login).await {
+        Ok(None) => match database.find_user_by("mail", mail).await {
+            Ok(None) => FindUserBy::UserNotFound,
+            Ok(Some(_)) => FindUserBy::UserFoundByEmail,
+            Err(_) => FindUserBy::UserFoundByEmail,
         },
-        Ok(Some(_)) => FindUser::UserFoundByLogin,
-        Err(_) => FindUser::UserFoundByLogin,
+        Ok(Some(_)) => FindUserBy::UserFoundByLogin,
+        Err(_) => FindUserBy::UserFoundByLogin,
     }
 }

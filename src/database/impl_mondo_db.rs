@@ -6,7 +6,7 @@ use rocket::State;
 
 use crate::constants::{EXPIRATION_REFRESH_TOKEN, EXPIRATION_TOKEN};
 use crate::database::connect_to_db::MongoDB;
-use crate::database::{FindUser, LoginError, RegistrationError};
+use crate::database::{FindUserBy, LoginError, RegistrationError};
 use crate::helper::{find_user_by_login_and_mail, hash_text};
 use crate::models::model_user::User;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
@@ -21,8 +21,8 @@ impl MongoDB {
 
     pub async fn find_user_by(
         &self,
-        find_by: String,
-        data_find_in: String,
+        find_by: &str,
+        data_find_in: &str,
     ) -> mongodb::error::Result<Option<User>> {
         let collection_user = self.database.collection::<User>("user");
 
@@ -35,7 +35,7 @@ impl MongoDB {
         &self,
         login_request: Json<LoginRequest>,
     ) -> mongodb::error::Result<LoginError> {
-        match Self::find_user_by(self, "login".to_string(), login_request.login.clone()).await {
+        match Self::find_user_by(self, "login", &login_request.login).await {
             Ok(option_user) => match option_user {
                 None => Ok(LoginError::WrongLogin),
                 Some(user) => match verify(&login_request.password, &user.password) {
@@ -71,7 +71,7 @@ impl MongoDB {
         )
         .await
         {
-            FindUser::UserNotFound => match hash_text(registration_request.password.clone(), 4) {
+            FindUserBy::UserNotFound => match hash_text(registration_request.password.clone(), 4) {
                 Ok(hash_password) => {
                     let user = User {
                         _id: ObjectId::new(),
@@ -95,8 +95,8 @@ impl MongoDB {
                 }
                 Err(_) => Ok(RegistrationError::WrongPassword),
             },
-            FindUser::UserFoundByEmail => Ok(RegistrationError::AlreadyRegisteredByEmail),
-            FindUser::UserFoundByLogin => Ok(RegistrationError::AlreadyRegisteredByLogin),
+            FindUserBy::UserFoundByEmail => Ok(RegistrationError::AlreadyRegisteredByEmail),
+            FindUserBy::UserFoundByLogin => Ok(RegistrationError::AlreadyRegisteredByLogin),
         }
     }
 }
