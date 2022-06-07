@@ -36,19 +36,3 @@ pub fn unauthorized() -> (Status, Json<ErrorResponse>) {
 pub fn internal_sever_error() -> (Status, Json<ErrorResponse>) {
     UNKNOWN
 }
-
-// Bearer
-// match get one header Authorization -> (Bearer 'TOKEN')
-//     Some(header) => {
-//         let array_header_val = header.split(" ")
-//             if array_header_val[1].is_empty {return Err(Status::401)}
-//             else {
-//                 array_header_val[1].parse_from_JWD() => struct { user_id: 'ObjectId' }
-//                 if find user in DB by user_id {
-//                     return Ok(Status::Ok)
-//                 } else {
-//                      return Err(Status::401)
-//                 }
-//             }
-//         },
-//     None(_) => return Err(Status::401)
