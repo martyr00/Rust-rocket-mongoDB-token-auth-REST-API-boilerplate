@@ -63,14 +63,6 @@ pub fn encode_token_and_refresh(
         EncodeJwtHelper::Ok(token) => {
             match encode_jwt(id, refresh_token_secret, expiration_refresh_token) {
                 EncodeJwtHelper::Ok(refresh_token) => {
-                    match decode_jwt(token.clone(), jwt_secret) {
-                        DecodeJwtHelper::Ok(claims) => {
-                            println!("{:?}", claims)
-                        }
-                        DecodeJwtHelper::Err => {
-                            println!("error")
-                        }
-                    };
                     Ok(Token {
                         token,
                         refresh_token,
