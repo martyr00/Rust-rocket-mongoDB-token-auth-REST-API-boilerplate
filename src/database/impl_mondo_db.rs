@@ -1,11 +1,14 @@
 use bcrypt::verify;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{bson, Database};
+use rocket::futures::task::Spawn;
+use rocket::log::private::log;
 use rocket::serde::json::Json;
+use std::future::Future;
 
 use crate::constants::{EXPIRATION_REFRESH_TOKEN, EXPIRATION_TOKEN};
 use crate::database::connect_to_db::MongoDB;
-use crate::database::{LoginError, RegistrationError};
+use crate::database::{FindUser, LoginError, RegistrationError};
 use crate::helper::hash_text;
 use crate::models::model_user::User;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
@@ -24,6 +27,26 @@ impl MongoDB {
         Ok(collection_user
             .find_one(bson::doc! { "login": login }, None)
             .await?)
+    }
+
+    pub async fn find_user_by_email(&self, mail: String) -> mongodb::error::Result<Option<User>> {
+        let collection_user = self.database.collection::<User>("user");
+
+        Ok(collection_user
+            .find_one(bson::doc! { "mail": mail }, None)
+            .await?)
+    }
+
+    pub async fn find_user(&self, mail: &str, login: &str) -> mongodb::error::Result<FindUser> {
+        match Self::find_user_by_login(self, login.to_string()).await {
+            Ok(None) => match Self::find_user_by_email(self, mail.to_string()).await {
+                Ok(None) => Ok(FindUser::UserNotFound),
+                Ok(Some(_)) => Ok(FindUser::UserFoundByEmail),
+                Err(_) => Ok(FindUser::UserFoundByEmail),
+            },
+            Ok(Some(_)) => Ok(FindUser::UserFoundByLogin),
+            Err(_) => Ok(FindUser::UserFoundByLogin),
+        }
     }
 
     pub async fn login(
@@ -59,31 +82,41 @@ impl MongoDB {
         registration_request: Json<RegistrationRequest>,
     ) -> mongodb::error::Result<RegistrationError> {
         let collection_user = self.database.collection::<User>("user");
-        match Self::find_user_by_login(self, registration_request.login.clone()).await {
-            Ok(Some(_)) => Ok(RegistrationError::AlreadyRegistered),
-            Ok(None) => match hash_text(registration_request.password.clone(), 4) {
-                Ok(hash_password) => {
-                    let user = User {
-                        _id: ObjectId::new(),
-                        login: registration_request.login.clone(),
-                        password: hash_password,
-                        first_name: registration_request.first_name.clone(),
-                        last_name: registration_request.last_name.clone(),
-                    };
-                    collection_user.insert_one(&user, None).await?;
-                    match create_token_and_refresh(
-                        user._id.clone(),
-                        JWT_SECRET,
-                        REFRESH_JWT_SECRET,
-                        EXPIRATION_REFRESH_TOKEN,
-                        EXPIRATION_TOKEN,
-                    ) {
-                        Ok(tokens) => Ok(RegistrationError::Ok(tokens)),
-                        Err(_) => Ok(RegistrationError::Unknown),
+        match Self::find_user(
+            self,
+            &registration_request.mail,
+            &registration_request.login,
+        )
+        .await
+        {
+            Ok(FindUser::UserNotFound) => {
+                match hash_text(registration_request.password.clone(), 4) {
+                    Ok(hash_password) => {
+                        let user = User {
+                            _id: ObjectId::new(),
+                            login: registration_request.login.clone(),
+                            password: hash_password,
+                            mail: registration_request.mail.to_string(),
+                            first_name: registration_request.first_name.clone(),
+                            last_name: registration_request.last_name.clone(),
+                        };
+                        collection_user.insert_one(&user, None).await?;
+                        match create_token_and_refresh(
+                            user._id.clone(),
+                            JWT_SECRET,
+                            REFRESH_JWT_SECRET,
+                            EXPIRATION_REFRESH_TOKEN,
+                            EXPIRATION_TOKEN,
+                        ) {
+                            Ok(tokens) => Ok(RegistrationError::Ok(tokens)),
+                            Err(_) => Ok(RegistrationError::Unknown),
+                        }
                     }
+                    Err(_) => Ok(RegistrationError::WrongPassword),
                 }
-                Err(_) => Ok(RegistrationError::WrongPassword),
-            },
+            }
+            Ok(FindUser::UserFoundByEmail) => Ok(RegistrationError::AlreadyRegisteredByEmail),
+            Ok(FindUser::UserFoundByLogin) => Ok(RegistrationError::AlreadyRegisteredByLogin),
             Err(_) => Ok(RegistrationError::Unknown),
         }
     }

@@ -40,8 +40,11 @@ pub const WEAK_LOGIN_JSON: ErrorResponse = ErrorResponse {
 };
 
 pub const ERROR_ALREADY_REGISTERED_STATUS: Status = Status::BadRequest;
-pub const ALREADY_REGISTERED_JSON: ErrorResponse = ErrorResponse {
-    cause: "Already registered",
+pub const ALREADY_REGISTERED_LOGIN_JSON: ErrorResponse = ErrorResponse {
+    cause: "Already registered by login",
+};
+pub const ALREADY_REGISTERED_EMAIL_JSON: ErrorResponse = ErrorResponse {
+    cause: "Already registered by email",
 };
 
 pub const ERROR_WRONG_FIRST_NAME_STATUS: Status = Status::BadRequest;
