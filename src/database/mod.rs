@@ -1,7 +1,7 @@
-use crate::models::tokens::Token;
-
 pub mod connect_to_db;
 pub mod impl_mondo_db;
+
+use crate::models::tokens::Token;
 
 pub enum LoginError {
     Ok(Token),
