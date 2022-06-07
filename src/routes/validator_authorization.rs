@@ -4,7 +4,7 @@ use crate::helper::get_valid_name;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::TypeValidDataFromRegistration::*;
 use crate::routes::{TypeValidDataFromRegistration, TypeValidMail, TypeValidTwoStr};
-use regex::{Error, Regex};
+use regex::Regex;
 use rocket::serde::json::Json;
 
 pub fn get_valid_login_and_password(

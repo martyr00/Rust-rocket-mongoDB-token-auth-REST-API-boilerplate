@@ -1,7 +1,6 @@
 #[macro_use]
 extern crate rocket;
 
-use chrono::Utc;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 

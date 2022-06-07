@@ -1,10 +1,7 @@
 use bcrypt::verify;
 use mongodb::bson::oid::ObjectId;
 use mongodb::{bson, Database};
-use rocket::futures::task::Spawn;
-use rocket::log::private::log;
 use rocket::serde::json::Json;
-use std::future::Future;
 
 use crate::constants::{EXPIRATION_REFRESH_TOKEN, EXPIRATION_TOKEN};
 use crate::database::connect_to_db::MongoDB;
