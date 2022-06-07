@@ -3,6 +3,7 @@ use mongodb::bson::oid::ObjectId;
 use mongodb::{bson, Database};
 use rocket::serde::json::Json;
 
+use crate::constants::{EXPIRATION_REFRESH_TOKEN, EXPIRATION_TOKEN};
 use crate::database::connect_to_db::MongoDB;
 use crate::database::{LoginError, RegistrationError};
 use crate::helper::hash_text;
@@ -38,6 +39,8 @@ impl MongoDB {
                             user._id.clone(),
                             JWT_SECRET,
                             REFRESH_JWT_SECRET,
+                            EXPIRATION_REFRESH_TOKEN,
+                            EXPIRATION_TOKEN,
                         ) {
                             Ok(tokens) => Ok(LoginError::Ok(tokens)),
                             Err(_) => Ok(LoginError::Unknown),
@@ -68,8 +71,13 @@ impl MongoDB {
                         last_name: registration_request.last_name.clone(),
                     };
                     collection_user.insert_one(&user, None).await?;
-                    match create_token_and_refresh(user._id.clone(), JWT_SECRET, REFRESH_JWT_SECRET)
-                    {
+                    match create_token_and_refresh(
+                        user._id.clone(),
+                        JWT_SECRET,
+                        REFRESH_JWT_SECRET,
+                        EXPIRATION_REFRESH_TOKEN,
+                        EXPIRATION_TOKEN,
+                    ) {
                         Ok(tokens) => Ok(RegistrationError::Ok(tokens)),
                         Err(_) => Ok(RegistrationError::Unknown),
                     }

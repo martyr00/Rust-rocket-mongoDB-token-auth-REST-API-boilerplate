@@ -11,7 +11,7 @@ mongodb = { version = "2.2.1", default-features = false, features = ["async-std-
 rocket_db_pools = { version = "0.1.0-rc.2", features = ["sqlx_sqlite"]}
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
-uuid = { version = "1.0.0", eatures = ["serde", "v4"] }
+uuid = { version = "1.1.1", eatures = ["serde", "v4"] }
 bcrypt = "0.13.0"
 chrono = "0.4.19"
 rocket-validation = "0.1.0"

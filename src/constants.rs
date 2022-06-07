@@ -8,6 +8,9 @@ use crate::error_response::error_responses::{
 use rocket::http::Status;
 use rocket::serde::json::Json;
 
+pub const EXPIRATION_REFRESH_TOKEN: i64 = 3600; //3600 sec == 1 day
+pub const EXPIRATION_TOKEN: i64 = 25200; //(3600sec * 7) == 7 days == 25200
+
 pub struct LenText {
     pub(crate) min: usize,
     pub(crate) max: usize,
