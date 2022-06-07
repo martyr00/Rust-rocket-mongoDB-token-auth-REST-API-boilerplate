@@ -3,9 +3,9 @@ use rocket::serde::json::Json;
 use rocket::State;
 
 use crate::constants::{
-    ALREADY_REGISTERED_EMAIL, ALREADY_REGISTERED_LOGIN, LEN_FIRST_NAME, LEN_LAST_NAME, LEN_LOGIN,
+    ALREADY_REGISTERED_LOGIN, ALREADY_REGISTERED_MAIL, LEN_FIRST_NAME, LEN_LAST_NAME, LEN_LOGIN,
     LEN_PASSWORD, UNKNOWN, WEAK_LOGIN, WEAK_PASSWORD, WRONG_FIRST_NAME, WRONG_LAST_NAME,
-    WRONG_REQUEST,
+    WRONG_MAIL, WRONG_REQUEST,
 };
 use crate::database::connect_to_db::MongoDB;
 use crate::database::RegistrationError;
@@ -38,7 +38,7 @@ pub async fn registration(
                     match database.registration(registration_request).await {
                         Ok(RegistrationError::Ok(token)) => Ok(Json(token)),
                         Ok(RegistrationError::AlreadyRegisteredByEmail) => {
-                            Err(ALREADY_REGISTERED_EMAIL)
+                            Err(ALREADY_REGISTERED_MAIL)
                         }
                         Ok(RegistrationError::AlreadyRegisteredByLogin) => {
                             Err(ALREADY_REGISTERED_LOGIN)
@@ -48,6 +48,7 @@ pub async fn registration(
                         Err(_) => Err(UNKNOWN),
                     }
                 }
+                TypeValidDataFromRegistration::BadMail => Err(WRONG_MAIL),
                 TypeValidDataFromRegistration::BadFirstName => Err(WRONG_FIRST_NAME),
                 TypeValidDataFromRegistration::BadLastName => Err(WRONG_LAST_NAME),
                 TypeValidDataFromRegistration::BadLogin => Err(WEAK_LOGIN),

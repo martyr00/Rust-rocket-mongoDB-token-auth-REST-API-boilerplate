@@ -1914,6 +1914,7 @@ dependencies = [
  "jsonwebtoken",
  "mongodb",
  "rand_core",
+ "regex",
  "rocket",
  "rocket-validation",
  "rocket_db_pools",

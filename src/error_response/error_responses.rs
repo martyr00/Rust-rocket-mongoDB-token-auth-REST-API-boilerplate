@@ -39,6 +39,11 @@ pub const WEAK_LOGIN_JSON: ErrorResponse = ErrorResponse {
     cause: "Weak login",
 };
 
+pub const ERROR_WRONG_MAIL_STATUS: Status = Status::BadRequest;
+pub const WRONG_MAIL_JSON: ErrorResponse = ErrorResponse {
+    cause: "Wrong mail",
+};
+
 pub const ERROR_ALREADY_REGISTERED_STATUS: Status = Status::BadRequest;
 pub const ALREADY_REGISTERED_LOGIN_JSON: ErrorResponse = ErrorResponse {
     cause: "Already registered by login",

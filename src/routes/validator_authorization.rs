@@ -3,7 +3,8 @@ use crate::get_valid_text;
 use crate::helper::get_valid_name;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::TypeValidDataFromRegistration::*;
-use crate::routes::{TypeValidDataFromRegistration, TypeValidTwoStr};
+use crate::routes::{TypeValidDataFromRegistration, TypeValidMail, TypeValidTwoStr};
+use regex::{Error, Regex};
 use rocket::serde::json::Json;
 
 pub fn get_valid_login_and_password(
@@ -48,6 +49,18 @@ pub fn get_valid_first_and_last_names(
     }
 }
 
+pub fn get_valid_mail(mail: &str) -> TypeValidMail {
+    match Regex::new(
+        r"^([a-z0-9_+]([a-z0-9_+.]*[a-z0-9_+])?)@([a-z0-9]+([\-\.][a-z0-9]+)*\.[a-z]{2,6})",
+    ) {
+        Result::Ok(regex) => match regex.is_match(mail) {
+            true => TypeValidMail::Ok,
+            false => TypeValidMail::BadMail,
+        },
+        Err(_) => TypeValidMail::BadMail,
+    }
+}
+
 pub fn valid_registration_data_user(
     registration_request: &Json<RegistrationRequest>,
     max_min_len_first_name: LenText,
@@ -68,7 +81,10 @@ pub fn valid_registration_data_user(
                 max_min_len_login,
                 max_min_len_password,
             ) {
-                TypeValidTwoStr::Ok => Ok,
+                TypeValidTwoStr::Ok => match get_valid_mail(&registration_request.mail) {
+                    TypeValidMail::Ok => Ok,
+                    TypeValidMail::BadMail => BadMail,
+                },
                 TypeValidTwoStr::BadFirst => BadLogin,
                 TypeValidTwoStr::BadSecond => BadPassword,
             }

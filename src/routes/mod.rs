@@ -8,10 +8,16 @@ pub enum TypeValidDataFromRegistration {
     BadLastName,
     BadLogin,
     BadPassword,
+    BadMail,
 }
 
 pub enum TypeValidTwoStr {
     Ok,
     BadFirst,
     BadSecond,
+}
+
+pub enum TypeValidMail {
+    Ok,
+    BadMail,
 }
