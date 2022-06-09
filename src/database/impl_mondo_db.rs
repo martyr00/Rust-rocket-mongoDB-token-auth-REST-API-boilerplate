@@ -30,6 +30,17 @@ impl MongoDB {
             .await?)
     }
 
+    pub async fn find_user_by_id(
+        &self,
+        data_find_in: ObjectId,
+    ) -> mongodb::error::Result<Option<User>> {
+        let collection_user = self.database.collection::<User>("user");
+
+        Ok(collection_user
+            .find_one(bson::doc! { "_id": data_find_in }, None)
+            .await?)
+    }
+
     pub async fn login(
         &self,
         login_request: Json<LoginRequest>,

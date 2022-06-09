@@ -1,1 +1,1 @@
-pub mod hello_name_test;
+pub mod hello_name;

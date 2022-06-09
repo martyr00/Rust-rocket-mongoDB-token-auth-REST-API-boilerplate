@@ -61,3 +61,6 @@ pub const ERROR_WRONG_LAST_NAME_STATUS: Status = Status::BadRequest;
 pub const WRONG_LAST_NAME_JSON: ErrorResponse = ErrorResponse {
     cause: "Wrong last name",
 };
+
+pub const ERROR_NOT_FOUND_STATUS: Status = Status::NotFound;
+pub const NOT_FOUND_JSON: ErrorResponse = ErrorResponse { cause: "Not found" };
