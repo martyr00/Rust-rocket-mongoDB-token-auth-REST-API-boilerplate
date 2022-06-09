@@ -62,12 +62,10 @@ pub fn encode_token_and_refresh(
     match encode_jwt(id, jwt_secret, expiration_token) {
         EncodeJwtHelper::Ok(token) => {
             match encode_jwt(id, refresh_token_secret, expiration_refresh_token) {
-                EncodeJwtHelper::Ok(refresh_token) => {
-                    Ok(Token {
-                        token,
-                        refresh_token,
-                    })
-                }
+                EncodeJwtHelper::Ok(refresh_token) => Ok(Token {
+                    token,
+                    refresh_token,
+                }),
                 EncodeJwtHelper::Err => Err(()),
             }
         }

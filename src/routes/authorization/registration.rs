@@ -11,6 +11,7 @@ use crate::database::connect_to_db::MongoDB;
 use crate::database::RegistrationError;
 use crate::error_response::error_responses::ErrorResponse;
 use crate::models::tokens::Token;
+use crate::routes::authorization::RegistrationRequestError;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::validator_authorization::valid_registration_data_user;
 use crate::routes::TypeValidDataFromRegistration;
@@ -18,14 +19,37 @@ use crate::routes::TypeValidDataFromRegistration;
 #[post(
     "/registration",
     format = "json",
-    data = "<maybe_registration_request>"
+    data = "<option_registration_request>"
 )]
 pub async fn registration(
     database: &State<MongoDB>,
-    maybe_registration_request: Option<Json<RegistrationRequest>>,
+    option_registration_request: Option<Json<RegistrationRequest>>,
 ) -> Result<Json<Token>, (Status, Json<ErrorResponse>)> {
-    match maybe_registration_request {
-        None => Err(WRONG_REQUEST),
+    match check_registration_request(option_registration_request) {
+        RegistrationRequestError::Ok(registration_request) => {
+            match database.registration(registration_request).await {
+                Ok(RegistrationError::Ok(token)) => Ok(Json(token)),
+                Ok(RegistrationError::AlreadyRegisteredByEmail) => Err(ALREADY_REGISTERED_MAIL),
+                Ok(RegistrationError::AlreadyRegisteredByLogin) => Err(ALREADY_REGISTERED_LOGIN),
+                Ok(RegistrationError::WrongPassword) => Err(WEAK_PASSWORD),
+                Ok(RegistrationError::Unknown) => Err(UNKNOWN),
+                Err(_) => Err(UNKNOWN),
+            }
+        }
+        RegistrationRequestError::NoneRegistrationRequest => Err(WRONG_REQUEST),
+        RegistrationRequestError::BadFirstName => Err(WRONG_FIRST_NAME),
+        RegistrationRequestError::BadLastName => Err(WRONG_LAST_NAME),
+        RegistrationRequestError::BadLogin => Err(WEAK_LOGIN),
+        RegistrationRequestError::BadPassword => Err(WEAK_PASSWORD),
+        RegistrationRequestError::BadMail => Err(WRONG_MAIL),
+    }
+}
+
+fn check_registration_request(
+    option_registration_request: Option<Json<RegistrationRequest>>,
+) -> RegistrationRequestError {
+    match option_registration_request {
+        None => RegistrationRequestError::NoneRegistrationRequest,
         Some(registration_request) => {
             match valid_registration_data_user(
                 &registration_request,
@@ -35,24 +59,15 @@ pub async fn registration(
                 LEN_PASSWORD,
             ) {
                 TypeValidDataFromRegistration::Ok => {
-                    match database.registration(registration_request).await {
-                        Ok(RegistrationError::Ok(token)) => Ok(Json(token)),
-                        Ok(RegistrationError::AlreadyRegisteredByEmail) => {
-                            Err(ALREADY_REGISTERED_MAIL)
-                        }
-                        Ok(RegistrationError::AlreadyRegisteredByLogin) => {
-                            Err(ALREADY_REGISTERED_LOGIN)
-                        }
-                        Ok(RegistrationError::WrongPassword) => Err(WEAK_PASSWORD),
-                        Ok(RegistrationError::Unknown) => Err(UNKNOWN),
-                        Err(_) => Err(UNKNOWN),
-                    }
+                    RegistrationRequestError::Ok(registration_request)
                 }
-                TypeValidDataFromRegistration::BadMail => Err(WRONG_MAIL),
-                TypeValidDataFromRegistration::BadFirstName => Err(WRONG_FIRST_NAME),
-                TypeValidDataFromRegistration::BadLastName => Err(WRONG_LAST_NAME),
-                TypeValidDataFromRegistration::BadLogin => Err(WEAK_LOGIN),
-                TypeValidDataFromRegistration::BadPassword => Err(WEAK_PASSWORD),
+                TypeValidDataFromRegistration::BadFirstName => {
+                    RegistrationRequestError::BadFirstName
+                }
+                TypeValidDataFromRegistration::BadLastName => RegistrationRequestError::BadLastName,
+                TypeValidDataFromRegistration::BadLogin => RegistrationRequestError::BadLogin,
+                TypeValidDataFromRegistration::BadPassword => RegistrationRequestError::BadPassword,
+                TypeValidDataFromRegistration::BadMail => RegistrationRequestError::BadMail,
             }
         }
     }
