@@ -1,19 +1,12 @@
-use crate::database::connect_to_db::MongoDB;
-use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
-use crate::routes::authorization::token::request_access_token::AuthorizedUser;
-use crate::{ErrorResponse, Status, UNAUTHORIZED};
 use rocket::serde::json::Json;
 use rocket::State;
-use serde::Serialize;
 
-#[derive(Serialize)]
-pub struct PublicDataForUser {
-    id: String,
-    login: String,
-    mail: String,
-    first_name: String,
-    last_name: String,
-}
+use crate::database::connect_to_db::MongoDB;
+use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
+use crate::models::response::public_data_for_user::PublicDataForUser;
+use crate::routes::authorization::token::request_access_token::AuthorizedUser;
+use crate::{ErrorResponse, Status, UNAUTHORIZED};
+
 #[get("/user")]
 pub async fn get_data_user(
     auth: AuthorizedUser,

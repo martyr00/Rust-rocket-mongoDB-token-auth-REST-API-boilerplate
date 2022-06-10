@@ -8,6 +8,7 @@ use rocket::State;
 use crate::database::connect_to_db::MongoDB;
 use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
 use crate::routes::authorization::token::request_access_token::AuthorizedUser;
+use crate::routes::routes::EditUserRequestError;
 use crate::routes::routes_models::patch_request::EditUserRequest;
 use crate::routes::validator_authorization::{valid_edit_model, ValidEditModelError};
 use crate::{ErrorResponse, Status, UNAUTHORIZED};
@@ -36,15 +37,6 @@ pub async fn edit_user(
         FindUserById::NoneUser => Err(UNAUTHORIZED),
         FindUserById::BadId => Err(UNAUTHORIZED),
     }
-}
-
-pub enum EditUserRequestError {
-    Ok(Json<EditUserRequest>),
-    NoneEditModel,
-    BadMail,
-    BadLogin,
-    BadFirstName,
-    BadLastName,
 }
 
 fn check_edit_data_user_request(

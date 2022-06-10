@@ -1,3 +1,6 @@
+use crate::routes::routes_models::patch_request::EditUserRequest;
+use rocket::serde::json::Json;
+
 pub mod delete_user;
 pub mod get_data_user;
 pub mod hello_name;
@@ -8,4 +11,13 @@ enum HelloNameError {
     OnlyLogin(String),
     NoOnlyLogin(String),
     ErrorID,
+}
+
+pub enum EditUserRequestError {
+    Ok(Json<EditUserRequest>),
+    NoneEditModel,
+    BadMail,
+    BadLogin,
+    BadFirstName,
+    BadLastName,
 }

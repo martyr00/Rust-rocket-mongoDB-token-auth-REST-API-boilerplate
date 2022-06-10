@@ -1,22 +1,18 @@
+use mongodb::bson::oid::ObjectId;
+use rocket::serde::json::Json;
+use rocket::State;
+
 use crate::constants::{EXPIRATION_REFRESH_TOKEN, EXPIRATION_TOKEN};
 use crate::helper::object_id_parse_str;
+use crate::models::request::refresh_token::RefreshToken;
 use crate::models::tokens::Token;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
 use crate::routes::authorization::token::create_token::{
     decode_jwt, encode_token_and_refresh, DecodeJwtHelper,
 };
-use crate::{ErrorResponse, Status, UNAUTHORIZED};
-use mongodb::bson::oid::ObjectId;
 
 use crate::database::connect_to_db::MongoDB;
-use rocket::serde::json::Json;
-use rocket::State;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-pub struct RefreshToken {
-    refresh_token: String,
-}
+use crate::{ErrorResponse, Status, UNAUTHORIZED};
 
 //refresh_tokens
 #[post("/refresh", format = "json", data = "<option_refresh_token>")]
@@ -36,6 +32,7 @@ pub async fn refresh_tokens(
     }
 }
 
+//encode prepare data
 async fn encode_token(database: &State<MongoDB>, id: ObjectId) -> Result<Token, ()> {
     match database.find_user_by_id(id).await {
         Ok(Some(_)) => {
@@ -58,6 +55,7 @@ async fn encode_token(database: &State<MongoDB>, id: ObjectId) -> Result<Token, 
     }
 }
 
+//decode jwt from body and return id
 fn decode_jwt_return_id(refresh_token: Json<RefreshToken>) -> Result<ObjectId, ()> {
     match decode_jwt(refresh_token.refresh_token.to_string(), REFRESH_JWT_SECRET) {
         DecodeJwtHelper::Ok(token_data) => {
