@@ -13,6 +13,7 @@ use crate::helper::check_valid_text;
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
 use crate::routes::routes::delete_user::delete_user;
+use crate::routes::routes::get_data_user::get_data_user;
 use crate::routes::routes::hello_name::{hello_name_user, hello_world};
 use crate::routes::routes::patch_user::edit_user;
 use crate::routes::routes::refresh_tokens::refresh_tokens;
@@ -38,7 +39,8 @@ async fn rocket() -> _ {
                 hello_world,
                 refresh_tokens,
                 delete_user,
-                edit_user
+                edit_user,
+                get_data_user
             ],
         )
         .register(
