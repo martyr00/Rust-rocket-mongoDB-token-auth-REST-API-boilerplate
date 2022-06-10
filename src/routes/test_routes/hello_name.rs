@@ -9,7 +9,7 @@ use crate::routes::authorization::token::request_access_token::AuthorizedUser;
 use rocket::serde::json::Json;
 use rocket::State;
 
-//request whit authorization model (token)
+//(private) request with authorization model (token)
 #[get("/hello")]
 pub async fn hello_name_user(
     auth: AuthorizedUser,
@@ -47,4 +47,10 @@ async fn check_from_db_real_names(database: &State<MongoDB>, id_str: String) -> 
         },
         Err(_) => HelloNameError::ErrorID,
     }
+}
+
+//(public) hello world
+#[get("/public/hello")]
+pub async fn hello_world() -> Json<&'static str> {
+    Json("Hello world")
 }
