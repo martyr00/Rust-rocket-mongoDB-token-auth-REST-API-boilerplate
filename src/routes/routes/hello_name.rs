@@ -2,7 +2,7 @@ use crate::constants::WRONG_REQUEST;
 use crate::database::connect_to_db::MongoDB;
 use crate::helper::object_id_parse_str;
 use crate::models::hello_response::HelloNameResponse;
-use crate::routes::test_routes::HelloNameError;
+use crate::routes::routes::HelloNameError;
 use crate::{ErrorResponse, Status, UNKNOWN};
 
 use crate::routes::authorization::token::request_access_token::AuthorizedUser;

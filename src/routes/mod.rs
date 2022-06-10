@@ -1,6 +1,6 @@
 pub mod authorization;
+pub mod routes;
 pub mod routes_models;
-pub mod test_routes;
 pub mod validator_authorization;
 
 pub enum TypeValidDataFromRegistration {

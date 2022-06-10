@@ -10,7 +10,8 @@ use crate::error_response::error_responses::ErrorResponse;
 use crate::helper::check_valid_text;
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
-use crate::routes::test_routes::hello_name::{hello_name_user, hello_world};
+use crate::routes::routes::hello_name::{hello_name_user, hello_world};
+use crate::routes::routes::refresh_tokens::refresh_tokens;
 
 pub mod constants;
 mod database;
@@ -26,7 +27,13 @@ async fn rocket() -> _ {
         .attach(init().await)
         .mount(
             "/api/v1",
-            routes![registration, login, hello_name_user, hello_world],
+            routes![
+                registration,
+                login,
+                hello_name_user,
+                hello_world,
+                refresh_tokens
+            ],
         )
         .register("/", catchers![])
 }

@@ -28,7 +28,10 @@ pub async fn registration(
     match check_registration_request(option_registration_request) {
         RegistrationRequestError::Ok(registration_request) => {
             match database.registration(registration_request).await {
-                Ok(RegistrationError::Ok(token)) => Ok(Json(token)),
+                Ok(RegistrationError::Ok(token)) => Ok(Json(Token {
+                    token: token.token,
+                    refresh_token: token.refresh_token,
+                })),
                 Ok(RegistrationError::AlreadyRegisteredByEmail) => Err(ALREADY_REGISTERED_MAIL),
                 Ok(RegistrationError::AlreadyRegisteredByLogin) => Err(ALREADY_REGISTERED_LOGIN),
                 Ok(RegistrationError::WrongPassword) => Err(WEAK_PASSWORD),

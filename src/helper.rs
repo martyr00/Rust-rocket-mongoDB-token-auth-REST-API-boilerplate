@@ -60,7 +60,7 @@ pub fn check_data_from_request(auth_header: Option<&str>) -> Result<Vec<&str>, (
     return if let Some(auth_string) = auth_header {
         let vec_header = auth_string.split_whitespace().collect::<Vec<_>>();
         if vec_header.len() != 2
-            && vec_header[0] == "Basic"
+            && vec_header[0] == "Bearer"
             && !vec_header[0].is_empty()
             && !vec_header[1].is_empty()
         {
