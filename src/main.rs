@@ -6,10 +6,13 @@ use rocket::serde::json::Json;
 
 use crate::constants::{NOT_FOUND, UNAUTHORIZED, UNKNOWN};
 use crate::database::connect_to_db::init;
-use crate::error_response::error_responses::ErrorResponse;
+use crate::error_response::error_responses::{
+    ErrorResponse, NOT_FOUND_JSON, UNAUTHORIZED_JSON, UNKNOWN_JSON,
+};
 use crate::helper::check_valid_text;
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
+use crate::routes::routes::delete_user::delete_user;
 use crate::routes::routes::hello_name::{hello_name_user, hello_world};
 use crate::routes::routes::refresh_tokens::refresh_tokens;
 
@@ -32,23 +35,27 @@ async fn rocket() -> _ {
                 login,
                 hello_name_user,
                 hello_world,
-                refresh_tokens
+                refresh_tokens,
+                delete_user
             ],
         )
-        .register("/", catchers![])
+        .register(
+            "/",
+            catchers![unauthorized, not_found, internal_sever_error,],
+        )
 }
 
 #[catch(401)]
-pub fn unauthorized() -> (Status, Json<ErrorResponse>) {
-    UNAUTHORIZED
+pub fn unauthorized() -> Json<ErrorResponse> {
+    Json(UNAUTHORIZED_JSON)
 }
 
-#[catch(401)]
-pub fn not_found() -> (Status, Json<ErrorResponse>) {
-    NOT_FOUND
+#[catch(404)]
+pub fn not_found() -> Json<ErrorResponse> {
+    Json(NOT_FOUND_JSON)
 }
 
-#[catch(401)]
-pub fn internal_sever_error() -> (Status, Json<ErrorResponse>) {
-    UNKNOWN
+#[catch(500)]
+pub fn internal_sever_error() -> Json<ErrorResponse> {
+    Json(UNKNOWN_JSON)
 }

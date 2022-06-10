@@ -3,7 +3,7 @@ use crate::database::connect_to_db::MongoDB;
 use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
 use crate::models::hello_response::HelloNameResponse;
 use crate::routes::routes::HelloNameError;
-use crate::{ErrorResponse, Status};
+use crate::{ErrorResponse, Status, UNAUTHORIZED};
 
 use crate::routes::authorization::token::request_access_token::AuthorizedUser;
 use rocket::serde::json::Json;
@@ -15,7 +15,6 @@ pub async fn hello_name_user(
     auth: AuthorizedUser,
     database: &State<MongoDB>,
 ) -> Result<Json<HelloNameResponse>, (Status, Json<ErrorResponse>)> {
-    println!("{}", &auth.user_id);
     match check_from_db_real_names(database, auth.user_id).await {
         HelloNameError::OnlyLogin(res_only_login) => Ok(Json(HelloNameResponse {
             greetings: res_only_login,
@@ -23,7 +22,7 @@ pub async fn hello_name_user(
         HelloNameError::NoOnlyLogin(res_no_only_login) => Ok(Json(HelloNameResponse {
             greetings: res_no_only_login,
         })),
-        HelloNameError::ErrorID => Err(WRONG_REQUEST),
+        HelloNameError::ErrorID => Err(UNAUTHORIZED),
     }
 }
 

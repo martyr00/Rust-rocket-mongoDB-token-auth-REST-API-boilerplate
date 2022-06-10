@@ -18,6 +18,14 @@ impl MongoDB {
         MongoDB { database }
     }
 
+    pub async fn delete_user(&self, login: &str) -> mongodb::error::Result<()> {
+        let collection = self.database.collection::<User>("user");
+        collection
+            .delete_one(bson::doc! { "login": login }, None)
+            .await?;
+        Ok(())
+    }
+
     pub async fn find_user_by(
         &self,
         find_by: &str,
