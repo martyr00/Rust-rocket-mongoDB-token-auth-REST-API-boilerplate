@@ -4,7 +4,7 @@ extern crate rocket;
 use rocket::http::Status;
 use rocket::serde::json::Json;
 
-use crate::constants::{NOT_FOUND, UNAUTHORIZED, UNKNOWN};
+use crate::constants::{UNAUTHORIZED, UNKNOWN};
 use crate::database::connect_to_db::init;
 use crate::error_response::error_responses::{
     ErrorResponse, NOT_FOUND_JSON, UNAUTHORIZED_JSON, UNKNOWN_JSON,

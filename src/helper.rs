@@ -40,7 +40,7 @@ pub fn object_id_parse_str(id_str: String) -> Result<ObjectId, String> {
     }
 }
 
-//find user by login and mail
+/// find user by login and mail
 pub async fn find_user_by_login_and_mail(
     database: &MongoDB,
     mail: &str,

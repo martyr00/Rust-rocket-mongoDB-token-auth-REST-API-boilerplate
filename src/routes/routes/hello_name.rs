@@ -1,4 +1,3 @@
-use crate::constants::WRONG_REQUEST;
 use crate::database::connect_to_db::MongoDB;
 use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
 use crate::models::hello_response::HelloNameResponse;
