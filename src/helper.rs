@@ -4,7 +4,8 @@ use bcrypt::hash;
 use mongodb::bson::oid::ObjectId;
 use rocket::http::Status;
 
-pub fn get_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {
+//check valid text
+pub fn check_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {
     return if !text.is_empty() && text.len() <= max_size && text.len() >= min_size {
         true
     } else {
@@ -12,7 +13,8 @@ pub fn get_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {
     };
 }
 
-pub fn get_valid_name(text: &str, max_size: usize, min_size: usize) -> bool {
+//check valid name
+pub fn check_valid_name(text: &str, max_size: usize, min_size: usize) -> bool {
     return if text.is_empty() || text.len() <= max_size && text.len() >= min_size {
         true
     } else {
@@ -20,6 +22,7 @@ pub fn get_valid_name(text: &str, max_size: usize, min_size: usize) -> bool {
     };
 }
 
+//hash text
 pub fn hash_text(text: String, cost: u32) -> Result<String, Status> {
     return match hash(text, cost) {
         Ok(hash_text) => Ok(hash_text),
@@ -27,6 +30,7 @@ pub fn hash_text(text: String, cost: u32) -> Result<String, Status> {
     };
 }
 
+//parse str to objectId
 pub fn object_id_parse_str(id_str: String) -> Result<ObjectId, String> {
     match ObjectId::parse_str(id_str) {
         Ok(to_id) => Ok(to_id),
@@ -34,6 +38,7 @@ pub fn object_id_parse_str(id_str: String) -> Result<ObjectId, String> {
     }
 }
 
+//find user by login and mail
 pub async fn find_user_by_login_and_mail(
     database: &MongoDB,
     mail: &str,
@@ -48,4 +53,22 @@ pub async fn find_user_by_login_and_mail(
         Ok(Some(_)) => FindUserBy::UserFoundByLogin,
         Err(_) => FindUserBy::UserFoundByLogin,
     }
+}
+
+//check data from request auth
+pub fn check_data_from_request(auth_header: Option<&str>) -> Result<Vec<&str>, ()> {
+    return if let Some(auth_string) = auth_header {
+        let vec_header = auth_string.split_whitespace().collect::<Vec<_>>();
+        if vec_header.len() != 2
+            && vec_header[0] == "Basic"
+            && !vec_header[0].is_empty()
+            && !vec_header[1].is_empty()
+        {
+            Err(())
+        } else {
+            Ok(vec_header)
+        }
+    } else {
+        Err(())
+    };
 }

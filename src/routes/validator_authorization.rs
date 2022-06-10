@@ -1,6 +1,6 @@
+use crate::check_valid_text;
 use crate::constants::LenText;
-use crate::get_valid_text;
-use crate::helper::get_valid_name;
+use crate::helper::check_valid_name;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 use crate::routes::TypeValidDataFromRegistration::*;
 use crate::routes::{TypeValidDataFromRegistration, TypeValidMail, TypeValidTwoStr};
@@ -13,8 +13,8 @@ pub fn get_valid_login_and_password(
     max_min_len_login: LenText,
     max_min_len_password: LenText,
 ) -> TypeValidTwoStr {
-    if get_valid_text(login, max_min_len_login.max, max_min_len_login.min) {
-        if get_valid_text(password, max_min_len_password.max, max_min_len_password.min) {
+    if check_valid_text(login, max_min_len_login.max, max_min_len_login.min) {
+        if check_valid_text(password, max_min_len_password.max, max_min_len_password.min) {
             TypeValidTwoStr::Ok
         } else {
             TypeValidTwoStr::BadSecond
@@ -30,12 +30,12 @@ pub fn get_valid_first_and_last_names(
     max_min_len_first_name: LenText,
     max_min_len_last_name: LenText,
 ) -> TypeValidTwoStr {
-    if get_valid_name(
+    if check_valid_name(
         first_str,
         max_min_len_first_name.max,
         max_min_len_first_name.min,
     ) {
-        if get_valid_name(
+        if check_valid_name(
             second_str,
             max_min_len_last_name.max,
             max_min_len_last_name.min,

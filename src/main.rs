@@ -7,7 +7,7 @@ use rocket::serde::json::Json;
 use crate::constants::{NOT_FOUND, UNAUTHORIZED, UNKNOWN};
 use crate::database::connect_to_db::init;
 use crate::error_response::error_responses::ErrorResponse;
-use crate::helper::get_valid_text;
+use crate::helper::check_valid_text;
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
 use crate::routes::test_routes::hello_name::hello_name_user;
