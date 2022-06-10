@@ -11,11 +11,37 @@ use crate::models::model_user::User;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
 use crate::routes::authorization::token::create_token::encode_token_and_refresh;
 use crate::routes::routes_models::login_request::LoginRequest;
+use crate::routes::routes_models::patch_request::EditUserRequest;
 use crate::routes::routes_models::registration_request::RegistrationRequest;
 
 impl MongoDB {
     pub fn new(database: Database) -> Self {
         MongoDB { database }
+    }
+
+    pub async fn edit_user(
+        &self,
+        edit_model: Json<EditUserRequest>,
+        user: User,
+    ) -> mongodb::error::Result<()> {
+        let collection = self.database.collection::<User>("user");
+        dbg!(
+            collection
+                .find_one_and_replace(
+                    bson::doc! { "_id": user._id },
+                    User {
+                        _id: user._id,
+                        login: edit_model.login.clone(),
+                        password: user.password,
+                        mail: edit_model.mail.clone(),
+                        first_name: edit_model.first_name.clone(),
+                        last_name: edit_model.last_name.clone()
+                    },
+                    None
+                )
+                .await?
+        );
+        Ok(())
     }
 
     pub async fn delete_user(&self, login: &str) -> mongodb::error::Result<()> {

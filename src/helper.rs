@@ -58,7 +58,7 @@ pub async fn find_user_by_login_and_mail(
 }
 
 //check data from request auth
-pub fn check_data_from_request(auth_header: Option<&str>) -> Result<Vec<&str>, ()> {
+pub fn check_data_from_auth_header(auth_header: Option<&str>) -> Result<Vec<&str>, ()> {
     return if let Some(auth_string) = auth_header {
         let vec_header = auth_string.split_whitespace().collect::<Vec<_>>();
         if vec_header.len() != 2
