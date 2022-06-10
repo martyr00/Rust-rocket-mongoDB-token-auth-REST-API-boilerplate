@@ -5,5 +5,4 @@ enum HelloNameError {
     OnlyLogin(String),
     NoOnlyLogin(String),
     ErrorID,
-    ErrorUnknown,
 }

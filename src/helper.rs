@@ -1,8 +1,10 @@
 use crate::database::connect_to_db::MongoDB;
 use crate::database::FindUserBy;
+use crate::models::model_user::User;
 use bcrypt::hash;
 use mongodb::bson::oid::ObjectId;
 use rocket::http::Status;
+use rocket::State;
 
 //check valid text
 pub fn check_valid_text(text: &str, max_size: usize, min_size: usize) -> bool {
@@ -71,4 +73,24 @@ pub fn check_data_from_request(auth_header: Option<&str>) -> Result<Vec<&str>, (
     } else {
         Err(())
     };
+}
+
+pub enum FindUserById {
+    Ok(User),
+    NoneUser,
+    BadId,
+}
+
+pub async fn parse_id_and_find_user_by_id(
+    database: &State<MongoDB>,
+    id_str: String,
+) -> FindUserById {
+    match object_id_parse_str(id_str) {
+        Ok(id) => match database.find_user_by_id(id).await {
+            Ok(Some(user)) => FindUserById::Ok(user),
+            Ok(None) => FindUserById::NoneUser,
+            Err(_) => FindUserById::BadId,
+        },
+        Err(_) => FindUserById::BadId,
+    }
 }
