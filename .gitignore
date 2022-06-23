@@ -2,3 +2,5 @@
 .idea
 /src/database/url_mongo_db.rs
 private.rs
+img.png
+img_1.png
