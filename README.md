@@ -234,7 +234,7 @@ token if the token is valid then the server executes the program.
 
 ####Example:
 
-![img_1.png](img_1.png)
+`authorization`       `Bearer eyJ0eXAiOiJKV1QiLCJhbGci....`
 
 ###Private hello response
 
