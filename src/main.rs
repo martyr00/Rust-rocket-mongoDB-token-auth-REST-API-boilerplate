@@ -1,9 +1,9 @@
 #[macro_use]
 extern crate rocket;
 
+use rocket::http::Method;
 use rocket::http::Status;
 use rocket::serde::json::Json;
-use rocket::http::Method;
 use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use crate::constants::{UNAUTHORIZED, UNKNOWN};
@@ -14,7 +14,6 @@ use crate::error_response::error_responses::{
 use crate::helper::check_valid_text;
 use crate::routes::authorization::login::login;
 use crate::routes::authorization::registration::registration;
-use crate::routes::cors::*;
 use crate::routes::routes::delete_user::delete_user;
 use crate::routes::routes::get_data_user::get_data_user;
 use crate::routes::routes::hello_name::{hello_name_user, hello_world};

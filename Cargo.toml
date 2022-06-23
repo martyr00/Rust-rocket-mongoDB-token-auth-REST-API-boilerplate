@@ -8,15 +8,15 @@ authors = ["Yura <leonyvb04@gmail.com> Batazov"]
 
 [dependencies]
 mongodb = { version = "2.2.1", default-features = false, features = ["async-std-runtime"]}
-rocket_db_pools = { version = "0.1.0-rc.2", features = ["sqlx_sqlite"]}
 rocket = { version = "0.5.0-rc.2", features = ["json"] }
 serde = { version = "1.0", features = ["derive"] }
-uuid = { version = "1.1.1", eatures = ["serde", "v4"] }
 bcrypt = "0.13.0"
 chrono = "0.4.19"
-rocket-validation = "0.1.0"
 jsonwebtoken = "8.1.0"
 rand_core = { version = "0.6", features = ["std"] }
 base64 = "0.13.0"
 regex = "1.5.6"
 rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
+schemars = "0.8.10"
+okapi = { version = "0.7.0-rc.1" }
+rocket_okapi = { version = "0.8.0-rc.2", features = ["swagger"] }

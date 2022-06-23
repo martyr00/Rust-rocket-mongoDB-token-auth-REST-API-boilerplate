@@ -1,5 +1,4 @@
 pub mod authorization;
-pub mod cors;
 pub mod routes;
 pub mod routes_models;
 pub mod validator_authorization;
