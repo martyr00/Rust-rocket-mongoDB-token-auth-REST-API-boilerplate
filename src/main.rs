@@ -3,6 +3,8 @@ extern crate rocket;
 
 use rocket::http::Status;
 use rocket::serde::json::Json;
+use rocket::http::Method;
+use rocket_cors::{AllowedOrigins, CorsOptions};
 
 use crate::constants::{UNAUTHORIZED, UNKNOWN};
 use crate::database::connect_to_db::init;
@@ -29,6 +31,15 @@ mod routes;
 
 #[launch]
 async fn rocket() -> _ {
+    let cors = CorsOptions::default()
+        .allowed_origins(AllowedOrigins::all())
+        .allowed_methods(
+            vec![Method::Get, Method::Post, Method::Patch, Method::Delete]
+                .into_iter()
+                .map(From::from)
+                .collect(),
+        )
+        .allow_credentials(true);
     rocket::build()
         .attach(init().await)
         .mount(
@@ -41,15 +52,10 @@ async fn rocket() -> _ {
                 refresh_tokens,
                 delete_user,
                 edit_user,
-                get_data_user,
-                cors_registration,
-                cors_login,
-                cors_refresh,
-                cors_user,
-                cors_pub_hello,
-                cors_hello
+                get_data_user
             ],
         )
+        .manage(cors.to_cors())
         .register(
             "/",
             catchers![unauthorized, not_found, internal_sever_error,],

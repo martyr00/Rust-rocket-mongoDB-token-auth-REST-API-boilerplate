@@ -19,4 +19,4 @@ jsonwebtoken = "8.1.0"
 rand_core = { version = "0.6", features = ["std"] }
 base64 = "0.13.0"
 regex = "1.5.6"
-rocket_cors = "0.5.2"
+rocket_cors = { git = "https://github.com/lawliet89/rocket_cors", branch = "master" }
