@@ -7,9 +7,9 @@ use rocket::State;
 
 use crate::database::connect_to_db::MongoDB;
 use crate::helper::{parse_id_and_find_user_by_id, FindUserById};
+use crate::models::request::patch_request::EditUserRequest;
 use crate::routes::authorization::token::request_access_token::AuthorizedUser;
 use crate::routes::routes::EditUserRequestError;
-use crate::routes::routes_models::patch_request::EditUserRequest;
 use crate::routes::validator_authorization::{valid_edit_model, ValidEditModelError};
 use crate::{ErrorResponse, Status, UNAUTHORIZED};
 

@@ -8,11 +8,11 @@ use crate::database::connect_to_db::MongoDB;
 use crate::database::{FindUserBy, LoginError, RegistrationError};
 use crate::helper::{find_user_by_login_and_mail, hash_text};
 use crate::models::model_user::User;
+use crate::models::request::login_request::LoginRequest;
+use crate::models::request::patch_request::EditUserRequest;
+use crate::models::request::registration_request::RegistrationRequest;
 use crate::private::{JWT_SECRET, REFRESH_JWT_SECRET};
 use crate::routes::authorization::token::create_token::encode_token_and_refresh;
-use crate::routes::routes_models::login_request::LoginRequest;
-use crate::routes::routes_models::patch_request::EditUserRequest;
-use crate::routes::routes_models::registration_request::RegistrationRequest;
 
 impl MongoDB {
     pub fn new(database: Database) -> Self {
