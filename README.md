@@ -1,4 +1,4 @@
-# Rust rocket mongoDB token-auth REST API boilerplate
+# Rust Rocket MongoDB token-auth REST API boilerplate
 
 
 In this repository, you can find backend Rust rocket mongodb rest-api
@@ -39,23 +39,17 @@ pub(crate) const URL_DB: &str = "mongodb+srv://<YOUR_LOGIN>:<YOUR_PASSWORD>@clus
 3. To run write this in your terminal:
 
 ```sh
-cargo run
+cargo check && cargo run
 ```
-
-## Testing
-
-For the test, you need to say the program [POSTMAN]
-
-[POSTMAN]: https://www.postman.com/
 
 ##Routes
 
-* http://127.0.0.1:8000/api/v1/registration (POST)
-* http://127.0.0.1:8000/api/v1/login (POST)
-* http://127.0.0.1:8000/api/v1/refresh (POST)
-* http://127.0.0.1:8000/api/v1/public/hello (GET)
-* http://127.0.0.1:8000/api/v1/hello (GET)
-* http://127.0.0.1:8000/api/v1/public/user (DELETE, PATCH)
+* /api/v1/registration (POST)
+* /api/v1/login (POST)
+* /api/v1/refresh (POST)
+* /api/v1/public/hello (GET)
+* /api/v1/hello (GET)
+* /api/v1/public/user (DELETE, PATCH)
 
 ##Registration acc 
 
