@@ -35,8 +35,12 @@ pub(crate) const URL_DB: &str = "mongodb+srv://<YOUR_LOGIN>:<YOUR_PASSWORD>@clus
 
  * `JWT_SECRET` and `REFRESH_JWT_SECRET` you need to come up with your own secret word to encrypt the tokens
  * For `URL_DB` you need registration your mongoDB acc here https://cloud.mongodb.com/
- * For start write in terminal  - `cargo run`
 
+3. To run write this in your terminal:
+
+```sh
+cargo run
+```
 
 ## Testing
 
