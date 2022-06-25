@@ -15,6 +15,35 @@ Visiting `localhost:8000/api/v1/public/hello`, for example, will trigger the `he
 route resulting in the string `Hello world` being sent to the
 browser. In this example there is no authorization.
 
+## How to start
+1. First you need to download this repository to your computer
+
+* Write this in your terminal:
+
+```sh
+git clone https://github.com/martyr00/Rust-rocket-mongoDB-token-auth-REST-API-boilerplate.git
+```
+* After open the project in your IDE
+
+2. You need to make your private.rs file as in the private.sample.rs:
+
+```rust
+pub const JWT_SECRET: &[u8] = b"<YOUR_JWT_SECRET_KEY>";
+pub const REFRESH_JWT_SECRET: &'static str = b"<YOUR_REFRESH_JWT_SECRET_KEY>";
+pub(crate) const URL_DB: &str = "mongodb+srv://<YOUR_LOGIN>:<YOUR_PASSWORD>@cluster0.d5yn0.mongodb.net/<YOUR_DB_NAME>";
+```
+
+ * `JWT_SECRET` and `REFRESH_JWT_SECRET` you need to come up with your own secret word to encrypt the tokens
+ * For `URL_DB` you need registration your mongoDB acc here https://cloud.mongodb.com/
+ * For start write in terminal  - `cargo run`
+
+
+## Testing
+
+For the test, you need to say the program [POSTMAN]
+
+[POSTMAN]: https://www.postman.com/
+
 ##Routes
 
 * http://127.0.0.1:8000/api/v1/registration (POST)
@@ -268,28 +297,3 @@ Status 401
 "cause": "Unauthorized"
 }
 ```
-
-
-## How to start
-
-First you need to make your private file as in the private.sample.rs
-
-```rust
-pub const JWT_SECRET: &[u8] = b"<YOUR_JWT_SECRET_KEY>";
-pub const REFRESH_JWT_SECRET: &'static str = b"<YOUR_REFRESH_JWT_SECRET_KEY>";
-pub(crate) const URL_DB: &str = "mongodb+srv://<YOUR_LOGIN>:<YOUR_PASSWORD>@cluster0.d5yn0.mongodb.net/<YOUR_DB_NAME>";
-```
-
-1. `JWT_SECRET` and `REFRESH_JWT_SECRET` you need to come up with your own secret word to encrypt the tokens
-2. For `URL_DB` you need registration your mongoDB acc here https://cloud.mongodb.com/
-3. For start write in terminal  - `cargo run`
-
-
-## Testing
-
-For the test, you need to say the program [POSTMAN]
-
-#### Example testing:
-![img.png](img.png)
-
-[POSTMAN]: https://www.postman.com/
