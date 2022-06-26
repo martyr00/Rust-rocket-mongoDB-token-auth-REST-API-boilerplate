@@ -42,7 +42,7 @@ pub(crate) const URL_DB: &str = "mongodb+srv://<YOUR_LOGIN>:<YOUR_PASSWORD>@clus
 cargo check && cargo run
 ```
 
-##Routes
+## Routes
 
 * /api/v1/registration (POST)
 * /api/v1/login (POST)
@@ -51,9 +51,9 @@ cargo check && cargo run
 * /api/v1/hello (GET)
 * /api/v1/public/user (DELETE, PATCH)
 
-##Registration acc 
+## Registration acc 
 
-###Registration request:
+### Registration request:
 * `login` (must be unique && len login must be from 3 to 200 letter)
 * `password` (len password must be from 8 to 200 letter and password is hashed before being saved to the database.)
 * `mail` (must be unique and mail)
@@ -71,7 +71,7 @@ pub struct RegistrationRequest {
     pub last_name: String,
 }
 ```
-####Example registration request:
+#### Example registration request:
 
 ```json
 {
@@ -83,7 +83,7 @@ pub struct RegistrationRequest {
 }
 ```
 
-###Registration response
+### Registration response
 
 In response, the server will send 2 JWT tokens. 
 The `token` is valid for 1 hour. `Refresh token` is valid for 7 days.
@@ -93,14 +93,14 @@ the headers in the authorization field.
 
 More about jwt authentication https://blog.logrocket.com/jwt-authentication-in-rust/
 
-####If everything is correct:
+#### If everything is correct:
 ```rust
 pub struct Token {
     pub token: String,
     pub refresh_token: String,
 }
 ```
-####Example:
+#### Example:
 
 ```json
 {
@@ -108,7 +108,7 @@ pub struct Token {
     "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiNjJiNGRhOTk4ZjgyMzc2YTk1MzM1MWIxIiwiZXhwIjoxNjU4NjExNjA5fQ.2_DjxtQxtsLsprvhBfYU8rKAoDfWMdshoPKDUqq6QZQ"
 }
 ```
-####Possible error:
+#### Possible error:
 
 * `bad login` -> Status 400 and string "Bad login" in json
 * `already registered login` -> Status 400 and string "Already registered by login" in json
@@ -117,7 +117,7 @@ pub struct Token {
 * `bad mail` -> Status 400 and string "Bad mail" in json
 * `already registered mail` -> Status 400 and string "Already registered by mail" in json
 
-####Example error:
+#### Example error:
 
 Status 400 Bad Request
 ```json
@@ -126,9 +126,9 @@ Status 400 Bad Request
 }
 ```
 
-##Login acc
+## Login acc
 
-###Login request:
+### Login request:
 
 * `login`(The server checks 2 logins from the database and the request)
 * `password`(The server checks the encrypted password in the
@@ -141,7 +141,7 @@ pub struct LoginRequest {
 }
 ```
 
-####Example:
+#### Example:
 ```json
 {
     "login": "test",
@@ -149,9 +149,9 @@ pub struct LoginRequest {
 }
 ```
 
-###Login response:
+### Login response:
 
-####If everything is correct:
+#### If everything is correct:
 ```rust
 pub struct Token {
     pub token: String,
@@ -159,7 +159,7 @@ pub struct Token {
 }
 ```
 
-####Example:
+#### Example:
 
 ```json
 {
@@ -168,10 +168,10 @@ pub struct Token {
 }
 ```
 
-####Possible error:
+#### Possible error:
 * `Bad request`(In any case)
  
-####Example:
+#### Example:
 
 Status 400
 ```json
@@ -180,11 +180,11 @@ Status 400
 }
 ```
 
-##Refresh token
+## Refresh token
 In this route, the frontend asks the server to
 refresh the `token` with a `refresh token` in json
 
-###Refresh token request
+### Refresh token request
 * `refresh token`(specific user)
 
 ```rust
@@ -194,16 +194,16 @@ pub struct RefreshToken {
 
 ```
 
-####Example refresh token request:
+#### Example refresh token request:
 ```json
 {
     "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoiNjJhM2I3Zjg4MTE1OWVkYWJmNTcwZjYwIiwiZXhwIjoxNjU3NDg5NDcyfQ.BcTanbs5lyT-Yv2ekf5-xl_NzEqpKsh5S59AEuZrmVQ"
 }
 ```
 
-###Refresh token response
+### Refresh token response
 
-####If everything is correct:
+#### If everything is correct:
 ```rust
 pub struct Token {
     pub token: String,
@@ -211,7 +211,7 @@ pub struct Token {
 }
 ```
 
-####Example:
+#### Example:
 
 ```json
 {
@@ -220,10 +220,10 @@ pub struct Token {
 }
 ```
 
-####Possible error:
+#### Possible error:
 * `Unauthorized`
 
-####Example:
+#### Example:
 
 Status 400
 ```json
@@ -232,62 +232,62 @@ Status 400
 }
 ```
 
-##Public hello
+## Public hello
 
 This is the only route without authorization. Therefore there is no request in this route.
 
-###Rust code:
+### Rust code:
 ```rust
 #[get("/public/hello")]
 pub async fn hello_world() -> Json<&'static str> {
   Json("Hello world")
 }
 ```
-###Response in json:
+### Response in json:
 ```
 {
   "Hello world"
 }
 ```
 
-##Private hello
+## Private hello
 In this route, the server checks in the headers 
 token if the token is valid then the server executes the program.
 
-###Private hello request:
-####From headers:
+### Private hello request:
+#### From headers:
 
 `authorization`   `Bearer` (TOKEN)
 
-####Example:
+#### Example:
 
 `authorization`       `Bearer eyJ0eXAiOiJKV1QiLCJhbGci....`
 
-###Private hello response
+### Private hello response
 
 the response will be a greeting with the user.
 If the database contains his first name and surname, 
 then the program will greet you by the first name and
 surname; if not, the program will greet you by login
 
-####If everything is correct:
+#### If everything is correct:
 
 ```rust
 pub struct HelloNameResponse {
     pub(crate) greetings: String,
 }
 ```
-####Example:
+#### Example:
 ```json
 {
     "greetings": "Hello test"
 }
 ```
 
-####Possible error:
+#### Possible error:
 * `Unauthorized`
 
-####Example:
+#### Example:
 Status 401
 
 ```json

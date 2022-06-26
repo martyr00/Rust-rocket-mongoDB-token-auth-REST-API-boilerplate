@@ -9,7 +9,7 @@ use rocket::serde::json::Json;
 use rocket::State;
 
 //(private) request with authorization model (token)
-#[get("/hello")]
+#[get("/private/hello")]
 pub async fn hello_name_user(
     auth: AuthorizedUser,
     database: &State<MongoDB>,

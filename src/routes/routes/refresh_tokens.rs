@@ -15,7 +15,7 @@ use crate::database::connect_to_db::MongoDB;
 use crate::{ErrorResponse, Status, UNAUTHORIZED};
 
 //refresh_tokens
-#[post("/refresh", format = "json", data = "<option_refresh_token>")]
+#[post("/refresh-token", format = "json", data = "<option_refresh_token>")]
 pub async fn refresh_tokens(
     database: &State<MongoDB>,
     option_refresh_token: Option<Json<RefreshToken>>,
